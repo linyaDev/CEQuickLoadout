@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <CEQL_CreateLoadout>Create loadout with "{0}"</CEQL_CreateLoadout>
+    <CEQL_AddToColonist>Add → {0}</CEQL_AddToColonist>
+    <CEQL_AddToColonistMenu>Add to colonist...</CEQL_AddToColonistMenu>
+    <CEQL_ItemAddedToPawn>"{0}" added to {1}'s loadout</CEQL_ItemAddedToPawn>
+    <CEQL_Loadout>Loadout</CEQL_Loadout>
+    <CEQL_NoLoadout>No loadout</CEQL_NoLoadout>
+    <CEQL_HoldItems>Held items</CEQL_HoldItems>
+</LanguageData>

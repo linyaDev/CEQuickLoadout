@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+    <name>CE Quick Loadout</name>
+    <author>linyaDev</author>
+    <supportedVersions>
+        <li>1.5</li>
+    </supportedVersions>
+    <packageId>linya.cequickloadout</packageId>
+    <description>
+[English]
+Right-click items on the map without selecting a pawn to manage CE loadouts. Add items to existing loadouts or create new ones directly from the map.
+
+[Russian]
+Правый клик по предметам на карте без выделения пешки для управления CE лоадаутами. Добавляйте предметы в существующие лоадауты или создавайте новые прямо с карты.
+    </description>
+    <modDependencies>
+        <li>
+            <packageId>brrainz.harmony</packageId>
+            <displayName>Harmony</displayName>
+        </li>
+        <li>
+            <packageId>CETeam.CombatExtended</packageId>
+            <displayName>Combat Extended</displayName>
+        </li>
+    </modDependencies>
+    <loadAfter>
+        <li>brrainz.harmony</li>
+        <li>Ludeon.RimWorld</li>
+        <li>CETeam.CombatExtended</li>
+    </loadAfter>
+</ModMetaData>
