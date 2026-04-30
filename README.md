@@ -26,3 +26,34 @@ Right-click items on the map to manage Combat Extended loadouts without opening 
 ```bash
 dotnet build Source/CEQuickLoadout/CEQuickLoadout.csproj -c Release
 ```
+
+---
+
+# CE Quick Loadout (Русский)
+
+Правый клик по предметам на карте для управления лоадаутами Combat Extended без открытия менеджера.
+
+## Возможности
+
+- **Добавить колонисту** — выделите предмет, правый клик, выберите колониста из подменю. При наведении видно текущий лоадаут.
+- **Создать лоадаут** — мгновенно создаёт новый CE лоадаут с выбранным предметом и открывает менеджер.
+- **Поддержка ExtendedLoadout** — добавляет предметы напрямую в PersonalLoadout колониста при использовании мода CE Extended Loadout.
+
+## Как использовать
+
+1. Левый клик по предмету на карте — выделить
+2. Правый клик — контекстное меню
+3. Выбрать колониста или создать новый лоадаут
+
+## Требования
+
+- RimWorld 1.5
+- [Combat Extended](https://github.com/CombatExtended-Continued/CombatExtended)
+- [Harmony](https://github.com/pardeike/HarmonyRimWorld)
+- Модпак Hardcore SK
+
+## Сборка
+
+```bash
+dotnet build Source/CEQuickLoadout/CEQuickLoadout.csproj -c Release
+```

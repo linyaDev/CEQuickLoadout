@@ -8,10 +8,24 @@
     <packageId>linya.cequickloadout</packageId>
     <description>
 [English]
-Right-click items on the map without selecting a pawn to manage CE loadouts. Add items to existing loadouts or create new ones directly from the map.
+Right-click items on the map to manage CE loadouts without opening the manager.
+
+Select an item on the map, right-click to see options:
+- Add to colonist — submenu with colonist list, hover to see current loadout
+- Add to existing loadout
+- Create new loadout — opens CE manager with the item
+
+Supports Combat Extended Extended Loadout (PersonalLoadout).
 
 [Russian]
-Правый клик по предметам на карте без выделения пешки для управления CE лоадаутами. Добавляйте предметы в существующие лоадауты или создавайте новые прямо с карты.
+Правый клик по предметам на карте для управления CE лоадаутами без открытия менеджера.
+
+Выделите предмет на карте, правый клик — опции:
+- Добавить колонисту — подменю со списком колонистов, при наведении видно текущий лоадаут
+- Добавить в существующий лоадаут
+- Создать новый лоадаут — открывает менеджер CE с предметом
+
+Поддержка Combat Extended Extended Loadout (PersonalLoadout).
     </description>
     <modDependencies>
         <li>
