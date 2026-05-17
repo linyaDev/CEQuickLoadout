@@ -7,4 +7,7 @@
     <CEQL_Loadout>Лоадаут</CEQL_Loadout>
     <CEQL_NoLoadout>Нет лоадаута</CEQL_NoLoadout>
     <CEQL_HoldItems>Удержание</CEQL_HoldItems>
+    <CEQL_AmmoInfo>Патроны (наведите)</CEQL_AmmoInfo>
+    <CEQL_MagazineSize>Магазин</CEQL_MagazineSize>
+    <CEQL_AmmoTypes>Совместимые патроны</CEQL_AmmoTypes>
 </LanguageData>

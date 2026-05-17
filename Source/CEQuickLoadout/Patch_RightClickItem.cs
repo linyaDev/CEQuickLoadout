@@ -34,6 +34,16 @@ public static class Patch_RightClickItem
             }
         }
 
+        // Ammo info for ranged weapons
+        string ammoInfo = GetAmmoInfo(thingDef);
+        if (ammoInfo != null)
+        {
+            options.Add(new FloatMenuOption(
+                "CEQL_AmmoInfo".Translate(),
+                () => {},
+                mouseoverGuiAction: rect => TooltipHandler.TipRegion(rect, ammoInfo)));
+        }
+
         // 1. Add to colonist's loadout — submenu
         options.Add(new FloatMenuOption(
             "CEQL_AddToColonistMenu".Translate(),
@@ -46,6 +56,26 @@ public static class Patch_RightClickItem
 
         Find.WindowStack.Add(new FloatMenu(options));
         return false;
+    }
+
+    private static string GetAmmoInfo(ThingDef def)
+    {
+        var ammoProps = def.GetCompProperties<CompProperties_AmmoUser>();
+        if (ammoProps?.ammoSet?.ammoTypes == null) return null;
+
+        var map = Find.CurrentMap;
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine(def.LabelCap);
+        sb.AppendLine("CEQL_MagazineSize".Translate() + ": " + ammoProps.magazineSize);
+        sb.AppendLine("CEQL_AmmoTypes".Translate() + ":");
+        foreach (var link in ammoProps.ammoSet.ammoTypes)
+        {
+            if (link.ammo == null) continue;
+            int count = map?.resourceCounter.GetCount(link.ammo) ?? 0;
+            if (count <= 0) continue;
+            sb.AppendLine("  • " + link.ammo.LabelCap + " x" + count);
+        }
+        return sb.ToString().TrimEnd();
     }
 
     private static string BuildLoadoutTooltip(Pawn pawn, Loadout loadout)

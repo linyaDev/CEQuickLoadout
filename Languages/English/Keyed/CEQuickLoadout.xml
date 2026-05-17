@@ -7,4 +7,7 @@
     <CEQL_Loadout>Loadout</CEQL_Loadout>
     <CEQL_NoLoadout>No loadout</CEQL_NoLoadout>
     <CEQL_HoldItems>Held items</CEQL_HoldItems>
+    <CEQL_AmmoInfo>Ammo info (hover)</CEQL_AmmoInfo>
+    <CEQL_MagazineSize>Magazine</CEQL_MagazineSize>
+    <CEQL_AmmoTypes>Compatible ammo</CEQL_AmmoTypes>
 </LanguageData>
