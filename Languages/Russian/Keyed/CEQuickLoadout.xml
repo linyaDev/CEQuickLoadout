@@ -10,4 +10,7 @@
     <CEQL_AmmoInfo>Патроны (наведите)</CEQL_AmmoInfo>
     <CEQL_MagazineSize>Магазин</CEQL_MagazineSize>
     <CEQL_AmmoTypes>Совместимые патроны</CEQL_AmmoTypes>
+    <CEQL_LoadoutWarningHeader>Проблемы с лоадаутом:</CEQL_LoadoutWarningHeader>
+    <CEQL_TipWeaponLine>Нет оружия: {0} ({1}/{2})</CEQL_TipWeaponLine>
+    <CEQL_TipAmmoLine>Мало патронов: {0} ({1}/{2})</CEQL_TipAmmoLine>
 </LanguageData>

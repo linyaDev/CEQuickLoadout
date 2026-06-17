@@ -9,8 +9,8 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <PropertyGroup>
-    <RimWorldPath>D:\RimWorld_HSK_1.5</RimWorldPath>
-    <HSKPath>D:\Mods\Hardcore-SK</HSKPath>
+    <RimWorldPath>D:\SteamLibrary\steamapps\common\RimWorld</RimWorldPath>
+    <HSKPath>D:\SteamLibrary\steamapps\common\RimWorld</HSKPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp" Publicize="true">

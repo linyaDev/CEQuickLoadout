@@ -10,4 +10,7 @@
     <CEQL_AmmoInfo>Ammo info (hover)</CEQL_AmmoInfo>
     <CEQL_MagazineSize>Magazine</CEQL_MagazineSize>
     <CEQL_AmmoTypes>Compatible ammo</CEQL_AmmoTypes>
+    <CEQL_LoadoutWarningHeader>Loadout problems:</CEQL_LoadoutWarningHeader>
+    <CEQL_TipWeaponLine>Missing weapon: {0} ({1}/{2})</CEQL_TipWeaponLine>
+    <CEQL_TipAmmoLine>Low ammo: {0} ({1}/{2})</CEQL_TipAmmoLine>
 </LanguageData>
