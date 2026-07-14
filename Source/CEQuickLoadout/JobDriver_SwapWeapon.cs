@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RimWorld;
 using Verse;
 using Verse.AI;
 
@@ -9,6 +10,8 @@ namespace CEQuickLoadout;
 // CE loadout system handles equipping from inventory on its own.
 public class JobDriver_SwapWeapon : JobDriver
 {
+    private const string Tag = "[CEQL Swap]";
+
     private Thing NewWeapon => TargetThingA;
     private Thing OldWeapon => TargetThingB;
 
@@ -32,23 +35,58 @@ public class JobDriver_SwapWeapon : JobDriver
         {
             var newWeapon = NewWeapon;
             var oldWeapon = OldWeapon;
-            if (newWeapon == null || newWeapon.Destroyed) return;
+
+            Log.Message($"{Tag} {pawn.LabelShortCap} starting swap. New={newWeapon?.LabelCap} (id={newWeapon?.thingIDNumber}, spawned={newWeapon?.Spawned}), Old={oldWeapon?.LabelCap} (id={oldWeapon?.thingIDNumber})");
+            Log.Message($"{Tag} {pawn.LabelShortCap} before swap — Primary={pawn.equipment?.Primary?.LabelCap} (id={pawn.equipment?.Primary?.thingIDNumber}), Inventory=[{InventoryList(pawn)}]");
+
+            if (newWeapon == null || newWeapon.Destroyed)
+            {
+                Log.Warning($"{Tag} {pawn.LabelShortCap} new weapon null or destroyed, aborting");
+                return;
+            }
 
             // Pick up new weapon from the ground into inventory
             if (newWeapon.Spawned)
                 newWeapon.DeSpawn();
-            pawn.inventory.innerContainer.TryAdd(newWeapon);
+            bool added = pawn.inventory.innerContainer.TryAdd(newWeapon);
+            Log.Message($"{Tag} {pawn.LabelShortCap} TryAdd new weapon: {added}");
 
             // Drop old weapon from equipment or inventory
             if (oldWeapon != null && !oldWeapon.Destroyed)
             {
                 if (pawn.equipment?.Primary == oldWeapon)
-                    pawn.equipment.TryDropEquipment(oldWeapon as ThingWithComps, out _, pawn.Position);
+                {
+                    bool dropped = pawn.equipment.TryDropEquipment(oldWeapon as ThingWithComps, out var droppedThing, pawn.Position);
+                    Log.Message($"{Tag} {pawn.LabelShortCap} dropped primary old weapon: {dropped}, droppedThing={droppedThing?.LabelCap}");
+                }
+                else if (pawn.inventory.innerContainer.Contains(oldWeapon))
+                {
+                    bool dropped = pawn.inventory.innerContainer.TryDrop(oldWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out var droppedThing);
+                    Log.Message($"{Tag} {pawn.LabelShortCap} dropped inventory old weapon: {dropped}, droppedThing={droppedThing?.LabelCap}");
+                }
                 else
-                    pawn.inventory.innerContainer.TryDrop(oldWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out _);
+                {
+                    Log.Warning($"{Tag} {pawn.LabelShortCap} old weapon not found in equipment or inventory! id={oldWeapon.thingIDNumber}");
+                }
             }
+
+            Log.Message($"{Tag} {pawn.LabelShortCap} after swap — Primary={pawn.equipment?.Primary?.LabelCap} (id={pawn.equipment?.Primary?.thingIDNumber}), Inventory=[{InventoryList(pawn)}]");
         };
         swap.defaultCompleteMode = ToilCompleteMode.Instant;
         yield return swap;
+    }
+
+    private static string InventoryList(Pawn pawn)
+    {
+        var inv = pawn.inventory?.innerContainer;
+        if (inv == null || inv.Count == 0) return "empty";
+        var sb = new System.Text.StringBuilder();
+        foreach (var t in inv)
+        {
+            if (sb.Length > 0) sb.Append(", ");
+            t.TryGetQuality(out var q);
+            sb.Append($"{t.LabelCap}(id={t.thingIDNumber}, q={q})");
+        }
+        return sb.ToString();
     }
 }

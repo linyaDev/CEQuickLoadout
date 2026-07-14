@@ -25,6 +25,8 @@ public class WeaponUpgradeChecker : MapComponent
 
     public override void MapComponentTick()
     {
+        if (!CEQuickLoadoutMod.Settings.enableWeaponUpgradeSearch) return;
+
         int tick = Find.TickManager.TicksGame;
 
         if (tick % CheckIntervalTicks == 0)
@@ -135,6 +137,10 @@ public class WeaponUpgradeChecker : MapComponent
             if (bestWeapon == null) continue;
 
             claimedItems.Add(bestWeapon.thingIDNumber);
+
+            currentWeapon.TryGetQuality(out var curQ);
+            Log.Message($"[CEQL Check] {pawn.LabelShortCap}: {def.LabelCap} upgrade {curQ}(id={currentWeapon.thingIDNumber}) -> {bestQuality}(id={bestWeapon.thingIDNumber})");
+
             var job = JobMaker.MakeJob(SwapJobDef, bestWeapon, currentWeapon);
             pawn.jobs.jobQueue.EnqueueFirst(job, JobTag.Misc);
 
