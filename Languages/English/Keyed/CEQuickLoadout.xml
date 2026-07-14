@@ -13,4 +13,5 @@
     <CEQL_LoadoutWarningHeader>Loadout problems:</CEQL_LoadoutWarningHeader>
     <CEQL_TipWeaponLine>Missing weapon: {0} ({1}/{2})</CEQL_TipWeaponLine>
     <CEQL_TipAmmoLine>Low ammo: {0} ({1}/{2})</CEQL_TipAmmoLine>
+    <CEQL_UpgradeFound>{0} found a better weapon: {1}</CEQL_UpgradeFound>
 </LanguageData>
