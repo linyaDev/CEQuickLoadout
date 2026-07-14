@@ -14,9 +14,13 @@ public class WeaponUpgradeChecker : MapComponent
 {
     private const int CheckIntervalTicks = 20000; // 8 in-game hours
     private const int RetryIntervalTicks = 2500;  // 1 in-game hour
+    private const int ForbidDurationTicks = 7;  // ~10 RimWorld seconds
 
     private readonly HashSet<int> deferred = new HashSet<int>();
     private readonly HashSet<int> claimedItems = new HashSet<int>();
+
+    // Temporarily forbidden items: thingIDNumber -> tick when to unforbid
+    private readonly Dictionary<int, int> tempForbidden = new Dictionary<int, int>();
 
     private static JobDef swapJobDef;
     private static JobDef SwapJobDef => swapJobDef ??= DefDatabase<JobDef>.GetNamed("CEQL_SwapWeapon");
@@ -29,6 +33,10 @@ public class WeaponUpgradeChecker : MapComponent
 
         int tick = Find.TickManager.TicksGame;
 
+        // Unforbid expired items
+        if (tempForbidden.Count > 0 && tick % 5 == 0)
+            UnforbidExpired(tick);
+
         if (tick % CheckIntervalTicks == 0)
         {
             CheckUpgrades();
@@ -37,6 +45,53 @@ public class WeaponUpgradeChecker : MapComponent
 
         if (deferred.Count > 0 && tick % RetryIntervalTicks == 0)
             RetryDeferred();
+    }
+
+    private void UnforbidExpired(int tick)
+    {
+        var toRemove = new List<int>();
+        foreach (var kv in tempForbidden)
+        {
+            if (tick < kv.Value) continue;
+            toRemove.Add(kv.Key);
+
+            // Find the thing on the map and unforbid
+            foreach (var thing in map.listerThings.AllThings)
+            {
+                if (thing.thingIDNumber == kv.Key)
+                {
+                    thing.SetForbidden(false);
+                    Log.Message($"[CEQL] Unforbid {thing.LabelCap} (id={thing.thingIDNumber})");
+                    break;
+                }
+            }
+        }
+        foreach (var id in toRemove)
+            tempForbidden.Remove(id);
+    }
+
+    public void TrackTempForbidden(Thing thing)
+    {
+        // This is a newly dropped item — always track it
+        int expireTick = Find.TickManager.TicksGame + ForbidDurationTicks;
+        tempForbidden[thing.thingIDNumber] = expireTick;
+        Log.Message($"[CEQL] Track temp forbid {thing.LabelCap} (id={thing.thingIDNumber}) until tick {expireTick}");
+    }
+
+    // Forbid all map items of the given def (except the one being picked up)
+    // Only forbids items that are NOT already forbidden (to preserve player forbids)
+    public void ForbidAllOfDef(ThingDef def, int exceptId)
+    {
+        int expireTick = Find.TickManager.TicksGame + ForbidDurationTicks;
+        foreach (var thing in map.listerThings.ThingsOfDef(def))
+        {
+            if (thing.thingIDNumber == exceptId) continue;
+            if (!thing.Spawned) continue;
+            if (thing.IsForbidden(Faction.OfPlayer)) continue; // already forbidden — don't touch
+            thing.SetForbidden(true);
+            tempForbidden[thing.thingIDNumber] = expireTick;
+            Log.Message($"[CEQL] Temp forbid {thing.LabelCap} (id={thing.thingIDNumber}) until tick {expireTick}");
+        }
     }
 
     private void CheckUpgrades()
@@ -80,7 +135,6 @@ public class WeaponUpgradeChecker : MapComponent
         var loadout = pawn.GetLoadout();
         if (loadout == null || loadout.defaultLoadout) return;
 
-        // Skip if pawn already has a swap job queued
         if (HasSwapJobQueued(pawn)) return;
 
         foreach (var slot in loadout.Slots)
@@ -88,7 +142,6 @@ public class WeaponUpgradeChecker : MapComponent
             var def = slot.thingDef;
             if (def == null || !def.IsWeapon) continue;
 
-            // Find the best quality this pawn currently carries of this def
             QualityCategory currentBest = QualityCategory.Awful;
             Thing currentWeapon = null;
 
@@ -117,7 +170,6 @@ public class WeaponUpgradeChecker : MapComponent
 
             if (currentWeapon == null) continue;
 
-            // Search the map for a better one
             Thing bestWeapon = null;
             QualityCategory bestQuality = currentBest;
 
@@ -147,15 +199,15 @@ public class WeaponUpgradeChecker : MapComponent
             Messages.Message(
                 "CEQL_UpgradeFound".Translate(pawn.LabelShortCap, bestWeapon.LabelCap),
                 pawn, MessageTypeDefOf.PositiveEvent, false);
+
+            break; // one swap per pawn per cycle
         }
     }
 
     private bool HasSwapJobQueued(Pawn pawn)
     {
-        // Check current job
         if (pawn.CurJob?.def == SwapJobDef) return true;
 
-        // Check job queue
         foreach (var qj in pawn.jobs.jobQueue)
             if (qj.job.def == SwapJobDef) return true;
 

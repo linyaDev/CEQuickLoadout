@@ -6,7 +6,7 @@ using Verse.AI;
 namespace CEQuickLoadout;
 
 // TargetA = new (better) weapon on the map, TargetB = old (worse) weapon carried by pawn.
-// Walks to TargetA, picks it up into inventory, drops TargetB on the ground.
+// Walks to TargetA, picks it up into inventory, drops TargetB on the ground (forbidden).
 // CE loadout system handles equipping from inventory on its own.
 public class JobDriver_SwapWeapon : JobDriver
 {
@@ -45,30 +45,43 @@ public class JobDriver_SwapWeapon : JobDriver
                 return;
             }
 
-            // Pick up new weapon from the ground into inventory
-            if (newWeapon.Spawned)
-                newWeapon.DeSpawn();
-            bool added = pawn.inventory.innerContainer.TryAdd(newWeapon);
-            Log.Message($"{Tag} {pawn.LabelShortCap} TryAdd new weapon: {added}");
+            // Forbid all other items of this def on the map right now
+            var checker = pawn.Map.GetComponent<WeaponUpgradeChecker>();
+            checker?.ForbidAllOfDef(newWeapon.def, newWeapon.thingIDNumber);
 
-            // Drop old weapon from equipment or inventory
+            // Drop old weapon FIRST, then pick up new
             if (oldWeapon != null && !oldWeapon.Destroyed)
             {
+                Thing droppedThing = null;
                 if (pawn.equipment?.Primary == oldWeapon)
                 {
-                    bool dropped = pawn.equipment.TryDropEquipment(oldWeapon as ThingWithComps, out var droppedThing, pawn.Position);
+                    bool dropped = pawn.equipment.TryDropEquipment(oldWeapon as ThingWithComps, out ThingWithComps droppedEq, pawn.Position);
+                    droppedThing = droppedEq;
                     Log.Message($"{Tag} {pawn.LabelShortCap} dropped primary old weapon: {dropped}, droppedThing={droppedThing?.LabelCap}");
                 }
                 else if (pawn.inventory.innerContainer.Contains(oldWeapon))
                 {
-                    bool dropped = pawn.inventory.innerContainer.TryDrop(oldWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out var droppedThing);
+                    bool dropped = pawn.inventory.innerContainer.TryDrop(oldWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out droppedThing);
                     Log.Message($"{Tag} {pawn.LabelShortCap} dropped inventory old weapon: {dropped}, droppedThing={droppedThing?.LabelCap}");
                 }
                 else
                 {
                     Log.Warning($"{Tag} {pawn.LabelShortCap} old weapon not found in equipment or inventory! id={oldWeapon.thingIDNumber}");
                 }
+
+                // Forbid and register with temp tracker so it gets unforbidden later
+                if (droppedThing != null)
+                {
+                    droppedThing.SetForbidden(true);
+                    pawn.Map.GetComponent<WeaponUpgradeChecker>()?.TrackTempForbidden(droppedThing);
+                }
             }
+
+            // Pick up new weapon from the ground into inventory
+            if (newWeapon.Spawned)
+                newWeapon.DeSpawn();
+            bool added = pawn.inventory.innerContainer.TryAdd(newWeapon);
+            Log.Message($"{Tag} {pawn.LabelShortCap} TryAdd new weapon: {added}");
 
             Log.Message($"{Tag} {pawn.LabelShortCap} after swap — Primary={pawn.equipment?.Primary?.LabelCap} (id={pawn.equipment?.Primary?.thingIDNumber}), Inventory=[{InventoryList(pawn)}]");
         };
