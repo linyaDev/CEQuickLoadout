@@ -83,6 +83,9 @@ public class JobDriver_SwapWeapon : JobDriver
             bool added = pawn.inventory.innerContainer.TryAdd(newWeapon);
             Log.Message($"{Tag} {pawn.LabelShortCap} TryAdd new weapon: {added}");
 
+            // Notify CE that inventory changed so it updates its cache
+            pawn.TryGetComp<CombatExtended.CompInventory>()?.UpdateInventory();
+
             Log.Message($"{Tag} {pawn.LabelShortCap} after swap — Primary={pawn.equipment?.Primary?.LabelCap} (id={pawn.equipment?.Primary?.thingIDNumber}), Inventory=[{InventoryList(pawn)}]");
         };
         swap.defaultCompleteMode = ToilCompleteMode.Instant;
