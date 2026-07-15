@@ -33,7 +33,6 @@ public class WeaponUpgradeChecker : MapComponent
 
         int tick = Find.TickManager.TicksGame;
 
-        // Unforbid expired items
         if (tempForbidden.Count > 0 && tick % 5 == 0)
             UnforbidExpired(tick);
 
@@ -55,13 +54,11 @@ public class WeaponUpgradeChecker : MapComponent
             if (tick < kv.Value) continue;
             toRemove.Add(kv.Key);
 
-            // Find the thing on the map and unforbid
             foreach (var thing in map.listerThings.AllThings)
             {
                 if (thing.thingIDNumber == kv.Key)
                 {
                     thing.SetForbidden(false);
-                    Log.Message($"[CEQL] Unforbid {thing.LabelCap} (id={thing.thingIDNumber})");
                     break;
                 }
             }
@@ -72,14 +69,11 @@ public class WeaponUpgradeChecker : MapComponent
 
     public void TrackTempForbidden(Thing thing)
     {
-        // This is a newly dropped item — always track it
-        int expireTick = Find.TickManager.TicksGame + ForbidDurationTicks;
-        tempForbidden[thing.thingIDNumber] = expireTick;
-        Log.Message($"[CEQL] Track temp forbid {thing.LabelCap} (id={thing.thingIDNumber}) until tick {expireTick}");
+        tempForbidden[thing.thingIDNumber] = Find.TickManager.TicksGame + ForbidDurationTicks;
     }
 
-    // Forbid all map items of the given def (except the one being picked up)
-    // Only forbids items that are NOT already forbidden (to preserve player forbids)
+    // Forbid all map items of the given def (except the one being picked up).
+    // Only forbids items that are NOT already forbidden (to preserve player forbids).
     public void ForbidAllOfDef(ThingDef def, int exceptId)
     {
         int expireTick = Find.TickManager.TicksGame + ForbidDurationTicks;
@@ -87,10 +81,9 @@ public class WeaponUpgradeChecker : MapComponent
         {
             if (thing.thingIDNumber == exceptId) continue;
             if (!thing.Spawned) continue;
-            if (thing.IsForbidden(Faction.OfPlayer)) continue; // already forbidden — don't touch
+            if (thing.IsForbidden(Faction.OfPlayer)) continue;
             thing.SetForbidden(true);
             tempForbidden[thing.thingIDNumber] = expireTick;
-            Log.Message($"[CEQL] Temp forbid {thing.LabelCap} (id={thing.thingIDNumber}) until tick {expireTick}");
         }
     }
 
@@ -190,9 +183,6 @@ public class WeaponUpgradeChecker : MapComponent
 
             claimedItems.Add(bestWeapon.thingIDNumber);
 
-            currentWeapon.TryGetQuality(out var curQ);
-            Log.Message($"[CEQL Check] {pawn.LabelShortCap}: {def.LabelCap} upgrade {curQ}(id={currentWeapon.thingIDNumber}) -> {bestQuality}(id={bestWeapon.thingIDNumber})");
-
             var job = JobMaker.MakeJob(SwapJobDef, bestWeapon, currentWeapon);
             pawn.jobs.jobQueue.EnqueueFirst(job, JobTag.Misc);
 
@@ -200,7 +190,7 @@ public class WeaponUpgradeChecker : MapComponent
                 "CEQL_UpgradeFound".Translate(pawn.LabelShortCap, bestWeapon.LabelCap),
                 pawn, MessageTypeDefOf.PositiveEvent, false);
 
-            break; // one swap per pawn per cycle
+            break;
         }
     }
 

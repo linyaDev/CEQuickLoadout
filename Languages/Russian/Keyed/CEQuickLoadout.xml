@@ -16,4 +16,5 @@
     <CEQL_UpgradeFound>{0} нашёл оружие лучше: {1}</CEQL_UpgradeFound>
     <CEQL_SettingUpgradeSearch>Автопоиск лучшего оружия</CEQL_SettingUpgradeSearch>
     <CEQL_SettingUpgradeSearchDesc>Пешки периодически проверяют, есть ли на карте оружие из лоадаута лучшего качества.</CEQL_SettingUpgradeSearchDesc>
+    <CEQL_SettingDumpDebug>Вывести отладку в лог</CEQL_SettingDumpDebug>
 </LanguageData>

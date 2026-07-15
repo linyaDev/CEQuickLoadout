@@ -7,11 +7,9 @@ namespace CEQuickLoadout;
 
 // TargetA = new (better) weapon on the map, TargetB = old (worse) weapon carried by pawn.
 // Walks to TargetA, picks it up into inventory, drops TargetB on the ground (forbidden).
-// CE loadout system handles equipping from inventory on its own.
+// Notifies CE (CompInventory) and Simple Sidearms (if loaded) about the change.
 public class JobDriver_SwapWeapon : JobDriver
 {
-    private const string Tag = "[CEQL Swap]";
-
     private Thing NewWeapon => TargetThingA;
     private Thing OldWeapon => TargetThingB;
 
@@ -25,51 +23,33 @@ public class JobDriver_SwapWeapon : JobDriver
         this.FailOnDestroyedOrNull(TargetIndex.A);
         this.FailOnBurningImmobile(TargetIndex.A);
 
-        // 1. Walk to the new weapon
         yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch)
             .FailOnDespawnedNullOrForbidden(TargetIndex.A);
 
-        // 2. Pick up new, drop old
         var swap = ToilMaker.MakeToil("swap");
         swap.initAction = () =>
         {
             var newWeapon = NewWeapon;
             var oldWeapon = OldWeapon;
+            if (newWeapon == null || newWeapon.Destroyed) return;
 
-            Log.Message($"{Tag} {pawn.LabelShortCap} starting swap. New={newWeapon?.LabelCap} (id={newWeapon?.thingIDNumber}, spawned={newWeapon?.Spawned}), Old={oldWeapon?.LabelCap} (id={oldWeapon?.thingIDNumber})");
-            Log.Message($"{Tag} {pawn.LabelShortCap} before swap — Primary={pawn.equipment?.Primary?.LabelCap} (id={pawn.equipment?.Primary?.thingIDNumber}), Inventory=[{InventoryList(pawn)}]");
+            // Forbid all other items of this def on the map
+            pawn.Map.GetComponent<WeaponUpgradeChecker>()?.ForbidAllOfDef(newWeapon.def, newWeapon.thingIDNumber);
 
-            if (newWeapon == null || newWeapon.Destroyed)
-            {
-                Log.Warning($"{Tag} {pawn.LabelShortCap} new weapon null or destroyed, aborting");
-                return;
-            }
-
-            // Forbid all other items of this def on the map right now
-            var checker = pawn.Map.GetComponent<WeaponUpgradeChecker>();
-            checker?.ForbidAllOfDef(newWeapon.def, newWeapon.thingIDNumber);
-
-            // Drop old weapon FIRST, then pick up new
+            // Drop old weapon
             if (oldWeapon != null && !oldWeapon.Destroyed)
             {
                 Thing droppedThing = null;
                 if (pawn.equipment?.Primary == oldWeapon)
                 {
-                    bool dropped = pawn.equipment.TryDropEquipment(oldWeapon as ThingWithComps, out ThingWithComps droppedEq, pawn.Position);
+                    pawn.equipment.TryDropEquipment(oldWeapon as ThingWithComps, out ThingWithComps droppedEq, pawn.Position);
                     droppedThing = droppedEq;
-                    Log.Message($"{Tag} {pawn.LabelShortCap} dropped primary old weapon: {dropped}, droppedThing={droppedThing?.LabelCap}");
                 }
                 else if (pawn.inventory.innerContainer.Contains(oldWeapon))
                 {
-                    bool dropped = pawn.inventory.innerContainer.TryDrop(oldWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out droppedThing);
-                    Log.Message($"{Tag} {pawn.LabelShortCap} dropped inventory old weapon: {dropped}, droppedThing={droppedThing?.LabelCap}");
-                }
-                else
-                {
-                    Log.Warning($"{Tag} {pawn.LabelShortCap} old weapon not found in equipment or inventory! id={oldWeapon.thingIDNumber}");
+                    pawn.inventory.innerContainer.TryDrop(oldWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out droppedThing);
                 }
 
-                // Forbid and register with temp tracker so it gets unforbidden later
                 if (droppedThing != null)
                 {
                     droppedThing.SetForbidden(true);
@@ -77,32 +57,55 @@ public class JobDriver_SwapWeapon : JobDriver
                 }
             }
 
-            // Pick up new weapon from the ground into inventory
+            // Pick up new weapon into inventory
             if (newWeapon.Spawned)
                 newWeapon.DeSpawn();
-            bool added = pawn.inventory.innerContainer.TryAdd(newWeapon);
-            Log.Message($"{Tag} {pawn.LabelShortCap} TryAdd new weapon: {added}");
+            pawn.inventory.innerContainer.TryAdd(newWeapon);
 
-            // Notify CE that inventory changed so it updates its cache
+            // Notify CE and Simple Sidearms
             pawn.TryGetComp<CombatExtended.CompInventory>()?.UpdateInventory();
-
-            Log.Message($"{Tag} {pawn.LabelShortCap} after swap — Primary={pawn.equipment?.Primary?.LabelCap} (id={pawn.equipment?.Primary?.thingIDNumber}), Inventory=[{InventoryList(pawn)}]");
+            NotifySidearms(pawn, oldWeapon, newWeapon);
         };
         swap.defaultCompleteMode = ToilCompleteMode.Instant;
         yield return swap;
     }
 
-    private static string InventoryList(Pawn pawn)
+    private static bool sidearmsChecked;
+    private static System.Type sidearmMemoryType;
+    private static System.Reflection.MethodInfo getMemoryMethod;
+    private static System.Reflection.MethodInfo informDropMethod;
+    private static System.Reflection.MethodInfo informAddMethod;
+
+    private static void NotifySidearms(Pawn pawn, Thing oldWeapon, Thing newWeapon)
     {
-        var inv = pawn.inventory?.innerContainer;
-        if (inv == null || inv.Count == 0) return "empty";
-        var sb = new System.Text.StringBuilder();
-        foreach (var t in inv)
+        if (!sidearmsChecked)
         {
-            if (sb.Length > 0) sb.Append(", ");
-            t.TryGetQuality(out var q);
-            sb.Append($"{t.LabelCap}(id={t.thingIDNumber}, q={q})");
+            sidearmsChecked = true;
+            sidearmMemoryType = GenTypes.GetTypeInAnyAssembly("SimpleSidearms.rimworld.CompSidearmMemory");
+            if (sidearmMemoryType != null)
+            {
+                getMemoryMethod = sidearmMemoryType.GetMethod("GetMemoryCompForPawn", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                informDropMethod = sidearmMemoryType.GetMethod("InformOfDroppedSidearm", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                informAddMethod = sidearmMemoryType.GetMethod("InformOfAddedSidearm", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            }
         }
-        return sb.ToString();
+
+        if (sidearmMemoryType == null || getMemoryMethod == null) return;
+
+        try
+        {
+            var memory = getMemoryMethod.Invoke(null, new object[] { pawn, true });
+            if (memory == null) return;
+
+            if (oldWeapon != null && informDropMethod != null)
+                informDropMethod.Invoke(memory, new object[] { oldWeapon, true });
+
+            if (newWeapon != null && informAddMethod != null)
+                informAddMethod.Invoke(memory, new object[] { newWeapon });
+        }
+        catch (System.Exception ex)
+        {
+            Log.Warning($"[CEQL] SimpleSidearms integration error: {ex.Message}");
+        }
     }
 }

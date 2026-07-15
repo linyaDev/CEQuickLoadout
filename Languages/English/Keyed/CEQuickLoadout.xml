@@ -16,4 +16,5 @@
     <CEQL_UpgradeFound>{0} found a better weapon: {1}</CEQL_UpgradeFound>
     <CEQL_SettingUpgradeSearch>Auto-search for better weapons</CEQL_SettingUpgradeSearch>
     <CEQL_SettingUpgradeSearchDesc>Pawns periodically check if a higher-quality version of their loadout weapon is available on the map.</CEQL_SettingUpgradeSearchDesc>
+    <CEQL_SettingDumpDebug>Dump debug info to log</CEQL_SettingDumpDebug>
 </LanguageData>
