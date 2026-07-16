@@ -49,7 +49,12 @@ public static class Patch_RightClickItem
             "CEQL_AddToColonistMenu".Translate(),
             () => ShowColonistSubmenu(thingDef, itemLabel)));
 
-        // 2. Create new loadout
+        // 2. Remove from colonist's loadout — submenu
+        options.Add(new FloatMenuOption(
+            "CEQL_RemoveFromColonistMenu".Translate(),
+            () => ShowRemoveColonistSubmenu()));
+
+        // 3. Create new loadout
         options.Add(new FloatMenuOption(
             "CEQL_CreateLoadout".Translate(itemLabel),
             () => CreateLoadout(thingDef, itemLabel)));
@@ -113,7 +118,8 @@ public static class Patch_RightClickItem
     private static void ShowColonistSubmenu(ThingDef def, string itemLabel)
     {
         var subOptions = new List<FloatMenuOption>();
-        foreach (var pawn in PawnsFinder.AllMaps_FreeColonists)
+        var colonists = Find.ColonistBar?.GetColonistsInOrder() ?? PawnsFinder.AllMaps_FreeColonists;
+        foreach (var pawn in colonists)
         {
             if (pawn.IsSlave) continue;
             var p = pawn;
@@ -163,6 +169,65 @@ public static class Patch_RightClickItem
         }
         Messages.Message("CEQL_ItemAddedToPawn".Translate(itemLabel, pawn.LabelShortCap),
             MessageTypeDefOf.PositiveEvent, false);
+    }
+
+    private static void ShowRemoveColonistSubmenu()
+    {
+        var subOptions = new List<FloatMenuOption>();
+        var colonists = Find.ColonistBar?.GetColonistsInOrder() ?? PawnsFinder.AllMaps_FreeColonists;
+        foreach (var pawn in colonists)
+        {
+            if (pawn.IsSlave) continue;
+            var p = pawn;
+            var loadout = p.GetLoadout();
+            if (loadout == null || loadout.defaultLoadout) continue;
+
+            string tooltip = BuildLoadoutTooltip(p, loadout);
+            subOptions.Add(new FloatMenuOption(
+                p.LabelShortCap,
+                () => ShowRemoveSlotSubmenu(p),
+                mouseoverGuiAction: rect => TooltipHandler.TipRegion(rect, tooltip)));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowRemoveSlotSubmenu(Pawn pawn)
+    {
+        Loadout loadout = null;
+        CombatExtended.ExtendedLoadout.Loadout_Multi multi = null;
+
+        var multiObj = CombatExtended.ExtendedLoadout.LoadoutMulti_Manager.GetLoadout(pawn, allowNull: true)
+            as CombatExtended.ExtendedLoadout.Loadout_Multi;
+        if (multiObj != null)
+        {
+            multi = multiObj;
+            loadout = multi.PersonalLoadout;
+        }
+        else
+        {
+            loadout = pawn.GetLoadout();
+        }
+
+        if (loadout == null || loadout.defaultLoadout || loadout.Slots.Count == 0) return;
+
+        var slotOptions = new List<FloatMenuOption>();
+        foreach (var slot in loadout.Slots)
+        {
+            var s = slot;
+            string name = s.thingDef != null ? s.thingDef.LabelCap : s.genericDef?.LabelCap ?? "?";
+            slotOptions.Add(new FloatMenuOption(
+                name + " x" + s.count,
+                () =>
+                {
+                    loadout.RemoveSlot(s);
+                    multi?.NotifyLoadoutChanged();
+                    Messages.Message("CEQL_ItemRemovedFromPawn".Translate(name, pawn.LabelShortCap),
+                        MessageTypeDefOf.NeutralEvent, false);
+                }));
+        }
+        if (slotOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(slotOptions));
     }
 
     private static void CreateLoadout(ThingDef def, string label)
