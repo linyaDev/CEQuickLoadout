@@ -2,8 +2,11 @@
 <LanguageData>
     <CEQL_CreateLoadout>Create loadout with "{0}"</CEQL_CreateLoadout>
     <CEQL_AddToColonist>Add → {0}</CEQL_AddToColonist>
-    <CEQL_AddToColonistMenu>Add to colonist...</CEQL_AddToColonistMenu>
+    <CEQL_AddToColonistMenu>Add</CEQL_AddToColonistMenu>
+    <CEQL_AddByColonist>Colonist</CEQL_AddByColonist>
+    <CEQL_AddByLoadout>Loadout</CEQL_AddByLoadout>
     <CEQL_ItemAddedToPawn>"{0}" added to {1}'s loadout</CEQL_ItemAddedToPawn>
+    <CEQL_ItemAddedToLoadout>"{0}" added to loadout "{1}"</CEQL_ItemAddedToLoadout>
     <CEQL_Loadout>Loadout</CEQL_Loadout>
     <CEQL_NoLoadout>No loadout</CEQL_NoLoadout>
     <CEQL_HoldItems>Held items</CEQL_HoldItems>
@@ -13,8 +16,11 @@
     <CEQL_LoadoutWarningHeader>Loadout problems:</CEQL_LoadoutWarningHeader>
     <CEQL_TipWeaponLine>Missing weapon: {0} ({1}/{2})</CEQL_TipWeaponLine>
     <CEQL_TipAmmoLine>Low ammo: {0} ({1}/{2})</CEQL_TipAmmoLine>
-    <CEQL_RemoveFromColonistMenu>Remove from loadout...</CEQL_RemoveFromColonistMenu>
+    <CEQL_RemoveFromColonistMenu>Remove</CEQL_RemoveFromColonistMenu>
+    <CEQL_RemoveByColonist>Colonist</CEQL_RemoveByColonist>
+    <CEQL_RemoveByLoadout>Loadout</CEQL_RemoveByLoadout>
     <CEQL_ItemRemovedFromPawn>"{0}" removed from {1}'s loadout</CEQL_ItemRemovedFromPawn>
+    <CEQL_ItemRemovedFromLoadout>"{0}" removed from loadout "{1}"</CEQL_ItemRemovedFromLoadout>
     <CEQL_UpgradeFound>{0} found a better weapon: {1}</CEQL_UpgradeFound>
     <CEQL_SettingUpgradeSearch>Auto-search for better weapons</CEQL_SettingUpgradeSearch>
     <CEQL_SettingUpgradeSearchDesc>Pawns periodically check if a higher-quality version of their loadout weapon is available on the map.</CEQL_SettingUpgradeSearchDesc>

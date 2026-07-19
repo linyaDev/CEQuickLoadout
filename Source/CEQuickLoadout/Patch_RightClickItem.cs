@@ -44,10 +44,10 @@ public static class Patch_RightClickItem
                 mouseoverGuiAction: rect => TooltipHandler.TipRegion(rect, ammoInfo)));
         }
 
-        // 1. Add to colonist's loadout — submenu
+        // 1. Add to loadout — submenu
         options.Add(new FloatMenuOption(
             "CEQL_AddToColonistMenu".Translate(),
-            () => ShowColonistSubmenu(thingDef, itemLabel)));
+            () => ShowAddSubmenu(thingDef, itemLabel)));
 
         // 2. Remove from colonist's loadout — submenu
         options.Add(new FloatMenuOption(
@@ -83,6 +83,17 @@ public static class Patch_RightClickItem
         return sb.ToString().TrimEnd();
     }
 
+    private static string BuildLoadoutSlotsTooltip(Loadout loadout)
+    {
+        var sb = new System.Text.StringBuilder();
+        foreach (var slot in loadout.Slots)
+        {
+            string name = slot.thingDef != null ? slot.thingDef.LabelCap : slot.genericDef?.LabelCap ?? "?";
+            sb.AppendLine(name + " x" + slot.count);
+        }
+        return sb.ToString().TrimEnd();
+    }
+
     private static string BuildLoadoutTooltip(Pawn pawn, Loadout loadout)
     {
         var sb = new System.Text.StringBuilder();
@@ -91,16 +102,11 @@ public static class Patch_RightClickItem
         // Loadout slots
         if (loadout != null && !loadout.defaultLoadout)
         {
-            sb.AppendLine("— " + "CEQL_Loadout".Translate() + ": " + loadout.label + " —");
             foreach (var slot in loadout.Slots)
             {
                 string name = slot.thingDef != null ? slot.thingDef.LabelCap : slot.genericDef?.LabelCap ?? "?";
-                sb.AppendLine("  " + name + " x" + slot.count);
+                sb.AppendLine(name + " x" + slot.count);
             }
-        }
-        else
-        {
-            sb.AppendLine("— " + "CEQL_NoLoadout".Translate() + " —");
         }
 
         // HoldTracker records
@@ -115,7 +121,24 @@ public static class Patch_RightClickItem
         return sb.ToString().TrimEnd();
     }
 
-    private static void ShowColonistSubmenu(ThingDef def, string itemLabel)
+    private static void ShowAddSubmenu(ThingDef def, string itemLabel)
+    {
+        var subOptions = new List<FloatMenuOption>();
+
+        // Option 1: By colonist (personal loadouts)
+        subOptions.Add(new FloatMenuOption(
+            "CEQL_AddByColonist".Translate(),
+            () => ShowAddByColonistSubmenu(def, itemLabel)));
+
+        // Option 2: By loadout (shared loadouts)
+        subOptions.Add(new FloatMenuOption(
+            "CEQL_AddByLoadout".Translate(),
+            () => ShowAddByLoadoutSubmenu(def, itemLabel)));
+
+        Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowAddByColonistSubmenu(ThingDef def, string itemLabel)
     {
         var subOptions = new List<FloatMenuOption>();
         var colonists = Find.ColonistBar?.GetColonistsInOrder() ?? PawnsFinder.AllMaps_FreeColonists;
@@ -123,12 +146,36 @@ public static class Patch_RightClickItem
         {
             if (pawn.IsSlave) continue;
             var p = pawn;
-            var loadout = p.GetLoadout();
+            var multi = CombatExtended.ExtendedLoadout.LoadoutMulti_Manager.GetLoadout(p, allowNull: true)
+                as CombatExtended.ExtendedLoadout.Loadout_Multi;
+            Loadout loadout = multi?.PersonalLoadout ?? p.GetLoadout();
             string tooltip = BuildLoadoutTooltip(p, loadout);
 
             subOptions.Add(new FloatMenuOption(
                 p.LabelShortCap,
                 () => AddToColonistLoadout(p, def, itemLabel),
+                mouseoverGuiAction: rect => TooltipHandler.TipRegion(rect, tooltip)));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowAddByLoadoutSubmenu(ThingDef def, string itemLabel)
+    {
+        var subOptions = new List<FloatMenuOption>();
+        foreach (var loadout in LoadoutManager.Loadouts)
+        {
+            if (loadout.defaultLoadout) continue;
+            var lo = loadout;
+            string tooltip = BuildLoadoutSlotsTooltip(lo);
+            subOptions.Add(new FloatMenuOption(
+                lo.label,
+                () =>
+                {
+                    lo.AddSlot(new LoadoutSlot(def, 1));
+                    Messages.Message("CEQL_ItemAddedToLoadout".Translate(itemLabel, lo.label),
+                        MessageTypeDefOf.PositiveEvent, false);
+                },
                 mouseoverGuiAction: rect => TooltipHandler.TipRegion(rect, tooltip)));
         }
         if (subOptions.Count > 0)
@@ -174,13 +221,32 @@ public static class Patch_RightClickItem
     private static void ShowRemoveColonistSubmenu()
     {
         var subOptions = new List<FloatMenuOption>();
+
+        // Option 1: By colonist (personal loadouts)
+        subOptions.Add(new FloatMenuOption(
+            "CEQL_RemoveByColonist".Translate(),
+            () => ShowRemoveByColonistSubmenu()));
+
+        // Option 2: By loadout (shared loadouts)
+        subOptions.Add(new FloatMenuOption(
+            "CEQL_RemoveByLoadout".Translate(),
+            () => ShowRemoveByLoadoutSubmenu()));
+
+        Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowRemoveByColonistSubmenu()
+    {
+        var subOptions = new List<FloatMenuOption>();
         var colonists = Find.ColonistBar?.GetColonistsInOrder() ?? PawnsFinder.AllMaps_FreeColonists;
         foreach (var pawn in colonists)
         {
             if (pawn.IsSlave) continue;
             var p = pawn;
-            var loadout = p.GetLoadout();
-            if (loadout == null || loadout.defaultLoadout) continue;
+            var multi = CombatExtended.ExtendedLoadout.LoadoutMulti_Manager.GetLoadout(p, allowNull: true)
+                as CombatExtended.ExtendedLoadout.Loadout_Multi;
+            Loadout loadout = multi?.PersonalLoadout ?? p.GetLoadout();
+            if (loadout == null || loadout.defaultLoadout || loadout.Slots.Count == 0) continue;
 
             string tooltip = BuildLoadoutTooltip(p, loadout);
             subOptions.Add(new FloatMenuOption(
@@ -192,23 +258,49 @@ public static class Patch_RightClickItem
             Find.WindowStack.Add(new FloatMenu(subOptions));
     }
 
+    private static void ShowRemoveByLoadoutSubmenu()
+    {
+        var subOptions = new List<FloatMenuOption>();
+        foreach (var loadout in LoadoutManager.Loadouts)
+        {
+            if (loadout.defaultLoadout || loadout.Slots.Count == 0) continue;
+            var lo = loadout;
+            string tooltip = BuildLoadoutSlotsTooltip(lo);
+            subOptions.Add(new FloatMenuOption(
+                lo.label,
+                () => ShowRemoveSlotFromLoadoutSubmenu(lo),
+                mouseoverGuiAction: rect => TooltipHandler.TipRegion(rect, tooltip)));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowRemoveSlotFromLoadoutSubmenu(Loadout loadout)
+    {
+        var slotOptions = new List<FloatMenuOption>();
+        foreach (var slot in loadout.Slots)
+        {
+            var s = slot;
+            string name = s.thingDef != null ? s.thingDef.LabelCap : s.genericDef?.LabelCap ?? "?";
+            slotOptions.Add(new FloatMenuOption(
+                name + " x" + s.count,
+                () =>
+                {
+                    loadout.RemoveSlot(s);
+                    Messages.Message("CEQL_ItemRemovedFromLoadout".Translate(name, loadout.label),
+                        MessageTypeDefOf.NeutralEvent, false);
+                }));
+        }
+        if (slotOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(slotOptions));
+    }
+
     private static void ShowRemoveSlotSubmenu(Pawn pawn)
     {
-        Loadout loadout = null;
-        CombatExtended.ExtendedLoadout.Loadout_Multi multi = null;
-
-        var multiObj = CombatExtended.ExtendedLoadout.LoadoutMulti_Manager.GetLoadout(pawn, allowNull: true)
+        var multi = CombatExtended.ExtendedLoadout.LoadoutMulti_Manager.GetLoadout(pawn, allowNull: true)
             as CombatExtended.ExtendedLoadout.Loadout_Multi;
-        if (multiObj != null)
-        {
-            multi = multiObj;
-            loadout = multi.PersonalLoadout;
-        }
-        else
-        {
-            loadout = pawn.GetLoadout();
-        }
 
+        Loadout loadout = multi?.PersonalLoadout ?? pawn.GetLoadout();
         if (loadout == null || loadout.defaultLoadout || loadout.Slots.Count == 0) return;
 
         var slotOptions = new List<FloatMenuOption>();
