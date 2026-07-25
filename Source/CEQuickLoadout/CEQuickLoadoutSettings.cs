@@ -6,11 +6,11 @@ namespace CEQuickLoadout;
 
 public class CEQuickLoadoutSettings : ModSettings
 {
-    public bool enableWeaponUpgradeSearch = false;
+    public bool enableWeaponUpgradeSearch = true;
 
     public override void ExposeData()
     {
-        Scribe_Values.Look(ref enableWeaponUpgradeSearch, "enableWeaponUpgradeSearch", false);
+        Scribe_Values.Look(ref enableWeaponUpgradeSearch, "enableWeaponUpgradeSearch", true);
         base.ExposeData();
     }
 }

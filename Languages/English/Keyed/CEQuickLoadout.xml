@@ -10,6 +10,14 @@
     <CEQL_Loadout>Loadout</CEQL_Loadout>
     <CEQL_NoLoadout>No loadout</CEQL_NoLoadout>
     <CEQL_HoldItems>Held items</CEQL_HoldItems>
+    <CEQL_OutfitInfo>In outfits</CEQL_OutfitInfo>
+    <CEQL_AddToOutfit>Add to outfit</CEQL_AddToOutfit>
+    <CEQL_RemoveFromOutfit>Remove from outfit</CEQL_RemoveFromOutfit>
+    <CEQL_ItemAddedToOutfit>"{0}" added to outfit "{1}"</CEQL_ItemAddedToOutfit>
+    <CEQL_ItemRemovedFromOutfit>"{0}" removed from outfit "{1}"</CEQL_ItemRemovedFromOutfit>
+    <CEQL_AssignOutfit>Change colonist outfit</CEQL_AssignOutfit>
+    <CEQL_OutfitAssigned>Outfit "{0}" assigned to {1}</CEQL_OutfitAssigned>
+    <CEQL_CreateOutfit>Create outfit with "{0}"</CEQL_CreateOutfit>
     <CEQL_AmmoInfo>Ammo info (hover)</CEQL_AmmoInfo>
     <CEQL_MagazineSize>Magazine</CEQL_MagazineSize>
     <CEQL_AmmoTypes>Compatible ammo</CEQL_AmmoTypes>

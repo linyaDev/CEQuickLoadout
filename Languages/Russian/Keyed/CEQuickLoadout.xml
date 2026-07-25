@@ -10,6 +10,14 @@
     <CEQL_Loadout>Лоадаут</CEQL_Loadout>
     <CEQL_NoLoadout>Нет лоадаута</CEQL_NoLoadout>
     <CEQL_HoldItems>Удержание</CEQL_HoldItems>
+    <CEQL_OutfitInfo>В гардеробе</CEQL_OutfitInfo>
+    <CEQL_AddToOutfit>Добавить в гардероб</CEQL_AddToOutfit>
+    <CEQL_RemoveFromOutfit>Удалить из гардероба</CEQL_RemoveFromOutfit>
+    <CEQL_ItemAddedToOutfit>«{0}» добавлен в гардероб «{1}»</CEQL_ItemAddedToOutfit>
+    <CEQL_ItemRemovedFromOutfit>«{0}» удалён из гардероба «{1}»</CEQL_ItemRemovedFromOutfit>
+    <CEQL_AssignOutfit>Сменить гардероб колонисту</CEQL_AssignOutfit>
+    <CEQL_OutfitAssigned>Гардероб «{0}» назначен {1}</CEQL_OutfitAssigned>
+    <CEQL_CreateOutfit>Создать гардероб с «{0}»</CEQL_CreateOutfit>
     <CEQL_AmmoInfo>Патроны (наведите)</CEQL_AmmoInfo>
     <CEQL_MagazineSize>Магазин</CEQL_MagazineSize>
     <CEQL_AmmoTypes>Совместимые патроны</CEQL_AmmoTypes>

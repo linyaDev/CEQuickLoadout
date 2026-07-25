@@ -23,17 +23,6 @@ public static class Patch_RightClickItem
         var thingDef = selectedThing.def;
         string itemLabel = thingDef.LabelCap;
 
-        // Vanilla options from things at cursor
-        IntVec3 c = IntVec3.FromVector3(UI.MouseMapPosition());
-        if (c.InBounds(Find.CurrentMap))
-        {
-            foreach (var item in selectedThing.Map.thingGrid.ThingsAt(c))
-            {
-                if (item != selectedThing)
-                    options.AddRange(item.GetFloatMenuOptions_NonPawn(selectedThing));
-            }
-        }
-
         // Ammo info for ranged weapons
         string ammoInfo = GetAmmoInfo(thingDef);
         if (ammoInfo != null)
@@ -44,23 +33,78 @@ public static class Patch_RightClickItem
                 mouseoverGuiAction: rect => TooltipHandler.TipRegion(rect, ammoInfo)));
         }
 
-        // 1. Add to loadout — submenu
-        options.Add(new FloatMenuOption(
-            "CEQL_AddToColonistMenu".Translate(),
-            () => ShowAddSubmenu(thingDef, itemLabel)));
+        bool isApparel = thingDef.IsApparel;
 
-        // 2. Remove from colonist's loadout — submenu
-        options.Add(new FloatMenuOption(
-            "CEQL_RemoveFromColonistMenu".Translate(),
-            () => ShowRemoveColonistSubmenu()));
+        // Outfit info for apparel
+        if (isApparel)
+        {
+            string outfitInfo = GetOutfitInfo(thingDef);
+            options.Add(new FloatMenuOption(
+                "CEQL_OutfitInfo".Translate(),
+                () => {},
+                mouseoverGuiAction: outfitInfo != null
+                    ? rect => TooltipHandler.TipRegion(rect, outfitInfo)
+                    : null));
+        }
 
-        // 3. Create new loadout
-        options.Add(new FloatMenuOption(
-            "CEQL_CreateLoadout".Translate(itemLabel),
-            () => CreateLoadout(thingDef, itemLabel)));
+        if (isApparel)
+        {
+            // 1a. Add to outfit
+            options.Add(new FloatMenuOption(
+                "CEQL_AddToOutfit".Translate(),
+                () => ShowAddToOutfitSubmenu(thingDef, itemLabel)));
+
+            // 2a. Remove from outfit
+            options.Add(new FloatMenuOption(
+                "CEQL_RemoveFromOutfit".Translate(),
+                () => ShowRemoveFromOutfitSubmenu(thingDef, itemLabel)));
+
+            // 3a. Assign outfit to colonist
+            options.Add(new FloatMenuOption(
+                "CEQL_AssignOutfit".Translate(),
+                () => ShowAssignOutfitColonistSubmenu()));
+        }
+        else
+        {
+            // 1. Add to loadout — submenu
+            options.Add(new FloatMenuOption(
+                "CEQL_AddToColonistMenu".Translate(),
+                () => ShowAddSubmenu(thingDef, itemLabel)));
+
+            // 2. Remove from loadout — submenu
+            options.Add(new FloatMenuOption(
+                "CEQL_RemoveFromColonistMenu".Translate(),
+                () => ShowRemoveColonistSubmenu()));
+        }
+
+        // 3. Create new loadout / outfit
+        if (isApparel)
+            options.Add(new FloatMenuOption(
+                "CEQL_CreateOutfit".Translate(itemLabel),
+                () => CreateOutfit(thingDef)));
+        else
+            options.Add(new FloatMenuOption(
+                "CEQL_CreateLoadout".Translate(itemLabel),
+                () => CreateLoadout(thingDef, itemLabel)));
 
         Find.WindowStack.Add(new FloatMenu(options));
         return false;
+    }
+
+    private static string GetOutfitInfo(ThingDef def)
+    {
+        var outfits = Current.Game?.outfitDatabase?.AllOutfits;
+        if (outfits == null) return null;
+
+        var sb = new System.Text.StringBuilder();
+        foreach (var outfit in outfits)
+        {
+            if (outfit.filter.Allows(def))
+                sb.AppendLine("✓ " + outfit.label);
+            else
+                sb.AppendLine("   " + outfit.label);
+        }
+        return sb.Length > 0 ? sb.ToString().TrimEnd() : null;
     }
 
     private static string GetAmmoInfo(ThingDef def)
@@ -320,6 +364,103 @@ public static class Patch_RightClickItem
         }
         if (slotOptions.Count > 0)
             Find.WindowStack.Add(new FloatMenu(slotOptions));
+    }
+
+    private static void ShowAddToOutfitSubmenu(ThingDef def, string itemLabel)
+    {
+        var outfits = Current.Game?.outfitDatabase?.AllOutfits;
+        if (outfits == null) return;
+
+        var subOptions = new List<FloatMenuOption>();
+        foreach (var outfit in outfits)
+        {
+            if (outfit.filter.Allows(def)) continue;
+            var o = outfit;
+            string tooltip = GetOutfitInfo(def);
+            subOptions.Add(new FloatMenuOption(
+                o.label,
+                () =>
+                {
+                    o.filter.SetAllow(def, true);
+                    Messages.Message("CEQL_ItemAddedToOutfit".Translate(itemLabel, o.label),
+                        MessageTypeDefOf.PositiveEvent, false);
+                },
+                mouseoverGuiAction: tooltip != null ? rect => TooltipHandler.TipRegion(rect, tooltip) : null));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowRemoveFromOutfitSubmenu(ThingDef def, string itemLabel)
+    {
+        var outfits = Current.Game?.outfitDatabase?.AllOutfits;
+        if (outfits == null) return;
+
+        var subOptions = new List<FloatMenuOption>();
+        foreach (var outfit in outfits)
+        {
+            if (!outfit.filter.Allows(def)) continue;
+            var o = outfit;
+            string tooltip = GetOutfitInfo(def);
+            subOptions.Add(new FloatMenuOption(
+                o.label,
+                () =>
+                {
+                    o.filter.SetAllow(def, false);
+                    Messages.Message("CEQL_ItemRemovedFromOutfit".Translate(itemLabel, o.label),
+                        MessageTypeDefOf.NeutralEvent, false);
+                },
+                mouseoverGuiAction: tooltip != null ? rect => TooltipHandler.TipRegion(rect, tooltip) : null));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowAssignOutfitColonistSubmenu()
+    {
+        var subOptions = new List<FloatMenuOption>();
+        var colonists = Find.ColonistBar?.GetColonistsInOrder() ?? PawnsFinder.AllMaps_FreeColonists;
+        foreach (var pawn in colonists)
+        {
+            if (pawn.IsSlave) continue;
+            var p = pawn;
+            string currentOutfit = p.outfits?.CurrentApparelPolicy?.label ?? "?";
+            subOptions.Add(new FloatMenuOption(
+                p.LabelShortCap + " (" + currentOutfit + ")",
+                () => ShowAssignOutfitSubmenu(p)));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowAssignOutfitSubmenu(Pawn pawn)
+    {
+        var outfits = Current.Game?.outfitDatabase?.AllOutfits;
+        if (outfits == null) return;
+
+        var subOptions = new List<FloatMenuOption>();
+        foreach (var outfit in outfits)
+        {
+            var o = outfit;
+            subOptions.Add(new FloatMenuOption(
+                o.label,
+                () =>
+                {
+                    pawn.outfits.CurrentApparelPolicy = o;
+                    Messages.Message("CEQL_OutfitAssigned".Translate(o.label, pawn.LabelShortCap),
+                        MessageTypeDefOf.PositiveEvent, false);
+                }));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void CreateOutfit(ThingDef def)
+    {
+        var outfit = Current.Game.outfitDatabase.MakeNewOutfit();
+        outfit.filter.SetDisallowAll();
+        outfit.filter.SetAllow(def, true);
+        Find.WindowStack.Add(new Dialog_RenamePolicy(outfit));
     }
 
     private static void CreateLoadout(ThingDef def, string label)
