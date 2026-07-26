@@ -8,6 +8,8 @@ public static class CEQuickLoadoutInit
 {
     static CEQuickLoadoutInit()
     {
-        new Harmony("linya.cequickloadout").PatchAll();
+        var harmony = new Harmony("linya.cequickloadout");
+        harmony.PatchAll();
+        Patch_RPGInventory.TryPatch(harmony);
     }
 }
