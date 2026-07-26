@@ -34,6 +34,27 @@ public static class Patch_RightClickItem
         }
 
         bool isApparel = thingDef.IsApparel;
+        bool isFood = thingDef.IsIngestible;
+
+        // Food policy info
+        if (isFood)
+        {
+            string dietInfo = GetDietInfo(thingDef);
+            options.Add(new FloatMenuOption(
+                "CEQL_DietInfo".Translate(),
+                () => {},
+                mouseoverGuiAction: dietInfo != null
+                    ? rect => TooltipHandler.TipRegion(rect, dietInfo)
+                    : null));
+
+            options.Add(new FloatMenuOption(
+                "CEQL_AddToDiet".Translate(),
+                () => ShowAddToDietSubmenu(thingDef, itemLabel)));
+
+            options.Add(new FloatMenuOption(
+                "CEQL_RemoveFromDiet".Translate(),
+                () => ShowRemoveFromDietSubmenu(thingDef, itemLabel)));
+        }
 
         // Outfit info for apparel
         if (isApparel)
@@ -450,6 +471,72 @@ public static class Patch_RightClickItem
                     Messages.Message("CEQL_OutfitAssigned".Translate(o.label, pawn.LabelShortCap),
                         MessageTypeDefOf.PositiveEvent, false);
                 }));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static string GetDietInfo(ThingDef def)
+    {
+        var diets = Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions;
+        if (diets == null) return null;
+
+        var sb = new System.Text.StringBuilder();
+        foreach (var diet in diets)
+        {
+            if (diet.filter.Allows(def))
+                sb.AppendLine("✓ " + diet.label);
+            else
+                sb.AppendLine("   " + diet.label);
+        }
+        return sb.Length > 0 ? sb.ToString().TrimEnd() : null;
+    }
+
+    private static void ShowAddToDietSubmenu(ThingDef def, string itemLabel)
+    {
+        var diets = Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions;
+        if (diets == null) return;
+
+        var subOptions = new List<FloatMenuOption>();
+        foreach (var diet in diets)
+        {
+            if (diet.filter.Allows(def)) continue;
+            var d = diet;
+            string tooltip = GetDietInfo(def);
+            subOptions.Add(new FloatMenuOption(
+                d.label,
+                () =>
+                {
+                    d.filter.SetAllow(def, true);
+                    Messages.Message("CEQL_ItemAddedToDiet".Translate(itemLabel, d.label),
+                        MessageTypeDefOf.PositiveEvent, false);
+                },
+                mouseoverGuiAction: tooltip != null ? rect => TooltipHandler.TipRegion(rect, tooltip) : null));
+        }
+        if (subOptions.Count > 0)
+            Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowRemoveFromDietSubmenu(ThingDef def, string itemLabel)
+    {
+        var diets = Current.Game?.foodRestrictionDatabase?.AllFoodRestrictions;
+        if (diets == null) return;
+
+        var subOptions = new List<FloatMenuOption>();
+        foreach (var diet in diets)
+        {
+            if (!diet.filter.Allows(def)) continue;
+            var d = diet;
+            string tooltip = GetDietInfo(def);
+            subOptions.Add(new FloatMenuOption(
+                d.label,
+                () =>
+                {
+                    d.filter.SetAllow(def, false);
+                    Messages.Message("CEQL_ItemRemovedFromDiet".Translate(itemLabel, d.label),
+                        MessageTypeDefOf.NeutralEvent, false);
+                },
+                mouseoverGuiAction: tooltip != null ? rect => TooltipHandler.TipRegion(rect, tooltip) : null));
         }
         if (subOptions.Count > 0)
             Find.WindowStack.Add(new FloatMenu(subOptions));

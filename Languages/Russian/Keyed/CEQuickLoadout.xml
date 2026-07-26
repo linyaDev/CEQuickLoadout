@@ -2,7 +2,7 @@
 <LanguageData>
     <CEQL_CreateLoadout>Создать лоадаут с «{0}»</CEQL_CreateLoadout>
     <CEQL_AddToColonist>Добавить → {0}</CEQL_AddToColonist>
-    <CEQL_AddToColonistMenu>Добавить</CEQL_AddToColonistMenu>
+    <CEQL_AddToColonistMenu>Добавить в лоадаут</CEQL_AddToColonistMenu>
     <CEQL_AddByColonist>Колонисту</CEQL_AddByColonist>
     <CEQL_AddByLoadout>В лоадаут</CEQL_AddByLoadout>
     <CEQL_ItemAddedToPawn>«{0}» добавлен в лоадаут {1}</CEQL_ItemAddedToPawn>
@@ -17,14 +17,20 @@
     <CEQL_ItemRemovedFromOutfit>«{0}» удалён из гардероба «{1}»</CEQL_ItemRemovedFromOutfit>
     <CEQL_AssignOutfit>Сменить гардероб колонисту</CEQL_AssignOutfit>
     <CEQL_OutfitAssigned>Гардероб «{0}» назначен {1}</CEQL_OutfitAssigned>
+    <CEQL_ChangeOutfitFor>Сменить гардероб: {0} ({1})</CEQL_ChangeOutfitFor>
     <CEQL_CreateOutfit>Создать гардероб с «{0}»</CEQL_CreateOutfit>
+    <CEQL_DietInfo>В диете</CEQL_DietInfo>
+    <CEQL_AddToDiet>Добавить в диету</CEQL_AddToDiet>
+    <CEQL_RemoveFromDiet>Удалить из диеты</CEQL_RemoveFromDiet>
+    <CEQL_ItemAddedToDiet>«{0}» добавлен в диету «{1}»</CEQL_ItemAddedToDiet>
+    <CEQL_ItemRemovedFromDiet>«{0}» удалён из диеты «{1}»</CEQL_ItemRemovedFromDiet>
     <CEQL_AmmoInfo>Патроны (наведите)</CEQL_AmmoInfo>
     <CEQL_MagazineSize>Магазин</CEQL_MagazineSize>
     <CEQL_AmmoTypes>Совместимые патроны</CEQL_AmmoTypes>
     <CEQL_LoadoutWarningHeader>Проблемы с лоадаутом:</CEQL_LoadoutWarningHeader>
     <CEQL_TipWeaponLine>Нет оружия: {0} ({1}/{2})</CEQL_TipWeaponLine>
     <CEQL_TipAmmoLine>Мало патронов: {0} ({1}/{2})</CEQL_TipAmmoLine>
-    <CEQL_RemoveFromColonistMenu>Удалить</CEQL_RemoveFromColonistMenu>
+    <CEQL_RemoveFromColonistMenu>Удалить из лоадаута</CEQL_RemoveFromColonistMenu>
     <CEQL_RemoveByColonist>У колониста</CEQL_RemoveByColonist>
     <CEQL_RemoveByLoadout>Из лоадаута</CEQL_RemoveByLoadout>
     <CEQL_ItemRemovedFromPawn>«{0}» удалён из лоадаута {1}</CEQL_ItemRemovedFromPawn>

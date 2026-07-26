@@ -2,7 +2,7 @@
 <LanguageData>
     <CEQL_CreateLoadout>Create loadout with "{0}"</CEQL_CreateLoadout>
     <CEQL_AddToColonist>Add → {0}</CEQL_AddToColonist>
-    <CEQL_AddToColonistMenu>Add</CEQL_AddToColonistMenu>
+    <CEQL_AddToColonistMenu>Add to loadout</CEQL_AddToColonistMenu>
     <CEQL_AddByColonist>Colonist</CEQL_AddByColonist>
     <CEQL_AddByLoadout>Loadout</CEQL_AddByLoadout>
     <CEQL_ItemAddedToPawn>"{0}" added to {1}'s loadout</CEQL_ItemAddedToPawn>
@@ -17,14 +17,20 @@
     <CEQL_ItemRemovedFromOutfit>"{0}" removed from outfit "{1}"</CEQL_ItemRemovedFromOutfit>
     <CEQL_AssignOutfit>Change colonist outfit</CEQL_AssignOutfit>
     <CEQL_OutfitAssigned>Outfit "{0}" assigned to {1}</CEQL_OutfitAssigned>
+    <CEQL_ChangeOutfitFor>Change outfit: {0} ({1})</CEQL_ChangeOutfitFor>
     <CEQL_CreateOutfit>Create outfit with "{0}"</CEQL_CreateOutfit>
+    <CEQL_DietInfo>In diet</CEQL_DietInfo>
+    <CEQL_AddToDiet>Add to diet</CEQL_AddToDiet>
+    <CEQL_RemoveFromDiet>Remove from diet</CEQL_RemoveFromDiet>
+    <CEQL_ItemAddedToDiet>"{0}" added to diet "{1}"</CEQL_ItemAddedToDiet>
+    <CEQL_ItemRemovedFromDiet>"{0}" removed from diet "{1}"</CEQL_ItemRemovedFromDiet>
     <CEQL_AmmoInfo>Ammo info (hover)</CEQL_AmmoInfo>
     <CEQL_MagazineSize>Magazine</CEQL_MagazineSize>
     <CEQL_AmmoTypes>Compatible ammo</CEQL_AmmoTypes>
     <CEQL_LoadoutWarningHeader>Loadout problems:</CEQL_LoadoutWarningHeader>
     <CEQL_TipWeaponLine>Missing weapon: {0} ({1}/{2})</CEQL_TipWeaponLine>
     <CEQL_TipAmmoLine>Low ammo: {0} ({1}/{2})</CEQL_TipAmmoLine>
-    <CEQL_RemoveFromColonistMenu>Remove</CEQL_RemoveFromColonistMenu>
+    <CEQL_RemoveFromColonistMenu>Remove from loadout</CEQL_RemoveFromColonistMenu>
     <CEQL_RemoveByColonist>Colonist</CEQL_RemoveByColonist>
     <CEQL_RemoveByLoadout>Loadout</CEQL_RemoveByLoadout>
     <CEQL_ItemRemovedFromPawn>"{0}" removed from {1}'s loadout</CEQL_ItemRemovedFromPawn>
