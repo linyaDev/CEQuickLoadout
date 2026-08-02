@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -6,9 +7,12 @@ using Verse;
 
 namespace CEQuickLoadout;
 
+#if !RIMWORLD_16
 [HarmonyPatch(typeof(FloatMenuMakerMap), nameof(FloatMenuMakerMap.ChoicesAtFor))]
+#endif
 public static class Patch_RightClickPawn
 {
+#if !RIMWORLD_16
     public static void Postfix(List<FloatMenuOption> __result, Vector3 clickPos, Pawn pawn)
     {
         IntVec3 c = IntVec3.FromVector3(clickPos);
@@ -25,6 +29,27 @@ public static class Patch_RightClickPawn
             }
         }
     }
+#else
+    public static void GetOptions_Postfix(List<FloatMenuOption> __result, List<Pawn> selectedPawns, Vector3 clickPos)
+    {
+        var map = selectedPawns?.FirstOrDefault()?.Map;
+        if (map == null) return;
+
+        IntVec3 c = IntVec3.FromVector3(clickPos);
+        if (!c.InBounds(map)) return;
+
+        foreach (var thing in map.thingGrid.ThingsAt(c))
+        {
+            if (thing is Pawn target
+                && target.Faction == Faction.OfPlayer && !target.IsSlave
+                && target.outfits?.CurrentApparelPolicy != null)
+            {
+                AddOutfitOptions(__result, target);
+                break;
+            }
+        }
+    }
+#endif
 
     private static void AddOutfitOptions(List<FloatMenuOption> options, Pawn target)
     {

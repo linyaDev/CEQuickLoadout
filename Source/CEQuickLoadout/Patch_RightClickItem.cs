@@ -8,16 +8,34 @@ using Verse;
 
 namespace CEQuickLoadout;
 
+#if !RIMWORLD_16
 [HarmonyPatch(typeof(FloatMenuMakerMap), nameof(FloatMenuMakerMap.TryMakeFloatMenu_NonPawn))]
+#endif
 public static class Patch_RightClickItem
 {
+#if !RIMWORLD_16
     public static bool Prefix(Thing selectedThing)
     {
-        if (selectedThing?.Map != Find.CurrentMap) return true;
-        if (selectedThing.def.category != ThingCategory.Item) return true;
+        return !TryShowMenu(selectedThing);
+    }
+#else
+    public static void HandleMapClicks_Postfix(Selector __instance)
+    {
+        if (Event.current.type != EventType.MouseDown || Event.current.button != 1) return;
+        var thing = Find.Selector.SingleSelectedThing;
+        if (thing == null || thing is Pawn) return;
+        if (TryShowMenu(thing))
+            Event.current.Use();
+    }
+#endif
+
+    public static bool TryShowMenu(Thing selectedThing)
+    {
+        if (selectedThing?.Map != Find.CurrentMap) return false;
+        if (selectedThing.def.category != ThingCategory.Item) return false;
 
         var loadouts = LoadoutManager.Loadouts;
-        if (loadouts == null) return true;
+        if (loadouts == null) return false;
 
         var options = new List<FloatMenuOption>();
         var thingDef = selectedThing.def;
@@ -109,7 +127,7 @@ public static class Patch_RightClickItem
                 () => CreateLoadout(thingDef, itemLabel)));
 
         Find.WindowStack.Add(new FloatMenu(options));
-        return false;
+        return true;
     }
 
     private static string GetOutfitInfo(ThingDef def)

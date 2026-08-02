@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CombatExtended;
+using CombatExtended.ExtendedLoadout;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -125,15 +126,21 @@ public class WeaponUpgradeChecker : MapComponent
 
     private void TryUpgradeWeapon(Pawn pawn)
     {
-        var loadout = pawn.GetLoadout();
-        if (loadout == null || loadout.defaultLoadout) return;
+        var multiBase = LoadoutMulti_Manager.GetLoadout(pawn, allowNull: true);
+        var multi = multiBase as Loadout_Multi;
+        var allSlots = multi?.Slots ?? pawn.GetLoadout()?.Slots;
+        if (allSlots == null) return;
 
         if (HasSwapJobQueued(pawn)) return;
 
-        foreach (var slot in loadout.Slots)
+        foreach (var slot in allSlots)
         {
             var def = slot.thingDef;
             if (def == null || !def.IsWeapon) continue;
+
+            var slotLoadout = multi?.FindLoadoutWithSlot(slot) ?? pawn.GetLoadout();
+            if (slotLoadout == null || slotLoadout.defaultLoadout) continue;
+            var slotExt = Loadout_Extended.Get(slotLoadout);
 
             QualityCategory currentBest = QualityCategory.Awful;
             Thing currentWeapon = null;
@@ -173,6 +180,7 @@ public class WeaponUpgradeChecker : MapComponent
                 if (!thing.TryGetQuality(out var q)) continue;
                 if (q <= bestQuality) continue;
                 if (thing.IsBurning()) continue;
+                if (!slotExt.Allows(thing)) continue;
                 if (!pawn.CanReserveAndReach(thing, PathEndMode.ClosestTouch, Danger.Deadly)) continue;
 
                 bestQuality = q;
@@ -182,6 +190,10 @@ public class WeaponUpgradeChecker : MapComponent
             if (bestWeapon == null) continue;
 
             claimedItems.Add(bestWeapon.thingIDNumber);
+
+            float foundHpPct = bestWeapon.MaxHitPoints > 0 ? (float)bestWeapon.HitPoints / bestWeapon.MaxHitPoints : 1f;
+            Log.Message($"[CEQL] {pawn.LabelShortCap} upgrade: {currentWeapon.LabelCap}(q={currentBest}) -> {bestWeapon.LabelCap}(q={bestQuality}, hp={foundHpPct:P0})" +
+                $" | loadout=\"{slotLoadout.label}\" hpRange={slotExt.HpRange} qualityRange={slotExt.QualityRange}");
 
             var job = JobMaker.MakeJob(SwapJobDef, bestWeapon, currentWeapon);
             pawn.jobs.jobQueue.EnqueueFirst(job, JobTag.Misc);

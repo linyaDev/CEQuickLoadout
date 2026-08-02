@@ -5,12 +5,13 @@
     <TargetFramework>net48</TargetFramework>
     <LangVersion>12.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>..\..\1.5\Assemblies</OutputPath>
+    <OutputPath>..\..\1.6\Assemblies</OutputPath>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <DefineConstants>$(DefineConstants);RIMWORLD_16</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <RimWorldPath>D:\RimWorld_HSK_1.5</RimWorldPath>
-    <HSKPath>D:\RimWorld_HSK_1.5</HSKPath>
+    <RimWorldPath>D:\SteamLibrary\steamapps\common\RimWorld</RimWorldPath>
+    <HSKPath>D:\SteamLibrary\steamapps\common\RimWorld</HSKPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp" Publicize="true">
