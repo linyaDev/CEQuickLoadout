@@ -64,48 +64,9 @@ public class JobDriver_SwapWeapon : JobDriver
 
             // Notify CE and Simple Sidearms
             pawn.TryGetComp<CombatExtended.CompInventory>()?.UpdateInventory();
-            NotifySidearms(pawn, oldWeapon, newWeapon);
+            SidearmsHelper.NotifySwap(pawn, oldWeapon, newWeapon);
         };
         swap.defaultCompleteMode = ToilCompleteMode.Instant;
         yield return swap;
-    }
-
-    private static bool sidearmsChecked;
-    private static System.Type sidearmMemoryType;
-    private static System.Reflection.MethodInfo getMemoryMethod;
-    private static System.Reflection.MethodInfo informDropMethod;
-    private static System.Reflection.MethodInfo informAddMethod;
-
-    private static void NotifySidearms(Pawn pawn, Thing oldWeapon, Thing newWeapon)
-    {
-        if (!sidearmsChecked)
-        {
-            sidearmsChecked = true;
-            sidearmMemoryType = GenTypes.GetTypeInAnyAssembly("SimpleSidearms.rimworld.CompSidearmMemory");
-            if (sidearmMemoryType != null)
-            {
-                getMemoryMethod = sidearmMemoryType.GetMethod("GetMemoryCompForPawn", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                informDropMethod = sidearmMemoryType.GetMethod("InformOfDroppedSidearm", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                informAddMethod = sidearmMemoryType.GetMethod("InformOfAddedSidearm", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-            }
-        }
-
-        if (sidearmMemoryType == null || getMemoryMethod == null) return;
-
-        try
-        {
-            var memory = getMemoryMethod.Invoke(null, new object[] { pawn, true });
-            if (memory == null) return;
-
-            if (oldWeapon != null && informDropMethod != null)
-                informDropMethod.Invoke(memory, new object[] { oldWeapon, true });
-
-            if (newWeapon != null && informAddMethod != null)
-                informAddMethod.Invoke(memory, new object[] { newWeapon });
-        }
-        catch (System.Exception ex)
-        {
-            Log.Warning($"[CEQL] SimpleSidearms integration error: {ex.Message}");
-        }
     }
 }

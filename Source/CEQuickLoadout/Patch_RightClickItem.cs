@@ -397,6 +397,8 @@ public static class Patch_RightClickItem
                 {
                     loadout.RemoveSlot(s);
                     multi?.NotifyLoadoutChanged();
+                    if (s.thingDef != null)
+                        SidearmsHelper.ForgetWeaponDef(pawn, s.thingDef);
                     Messages.Message("CEQL_ItemRemovedFromPawn".Translate(name, pawn.LabelShortCap),
                         MessageTypeDefOf.NeutralEvent, false);
                 }));
@@ -573,6 +575,11 @@ public static class Patch_RightClickItem
         var newLoadout = new Loadout(label);
         newLoadout.AddSlot(new LoadoutSlot(def, 1));
         LoadoutManager.AddLoadout(newLoadout);
+
+        var ext = CombatExtended.ExtendedLoadout.Loadout_Extended.Get(newLoadout);
+        ext.HpRange = new FloatRange(0.5f, 1f);
+        ext.RefillThreshold = 0.85f;
+
         Find.WindowStack.Add(new Dialog_ManageLoadouts(newLoadout));
     }
 }
