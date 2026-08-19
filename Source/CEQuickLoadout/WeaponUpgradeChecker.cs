@@ -180,6 +180,7 @@ public class WeaponUpgradeChecker : MapComponent
                 if (!thing.TryGetQuality(out var q)) continue;
                 if (q <= bestQuality) continue;
                 if (thing.IsBurning()) continue;
+                if (CompBiocodable.IsBiocoded(thing) && !CompBiocodable.IsBiocodedFor(thing, pawn)) continue;
                 if (!slotExt.Allows(thing)) continue;
                 if (!pawn.CanReserveAndReach(thing, PathEndMode.ClosestTouch, Danger.Deadly)) continue;
 
