@@ -49,5 +49,6 @@
     <CEQL_OutfitMenu>Гардероб</CEQL_OutfitMenu>
     <CEQL_DietMenu>Диета</CEQL_DietMenu>
     <CEQL_EditLoadoutMenu>Изменить лоадаут с «{0}»</CEQL_EditLoadoutMenu>
+    <CEQL_AddByColonistTop>Добавить колонисту</CEQL_AddByColonistTop>
     <CEQL_CreateNew>Создать новый</CEQL_CreateNew>
 </LanguageData>

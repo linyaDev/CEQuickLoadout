@@ -93,6 +93,12 @@ public static class Patch_RightClickItem
         }
         else
         {
+            // Shortcut to the same "add to a colonist's loadout" list nested under
+            // the Loadout category, so it doesn't take an extra click to reach.
+            options.Add(new FloatMenuOption(
+                "CEQL_AddByColonistTop".Translate(),
+                () => ShowAddByColonistSubmenu(thingDef, itemLabel)));
+
             var existingLoadouts = FindLoadoutsContaining(thingDef);
             if (existingLoadouts.Count > 0)
                 options.Add(new FloatMenuOption(
