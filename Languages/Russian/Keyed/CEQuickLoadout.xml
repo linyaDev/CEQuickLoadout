@@ -48,4 +48,6 @@
     <CEQL_LoadoutMenu>Лоадаут</CEQL_LoadoutMenu>
     <CEQL_OutfitMenu>Гардероб</CEQL_OutfitMenu>
     <CEQL_DietMenu>Диета</CEQL_DietMenu>
+    <CEQL_AlreadyExists>(уже есть)</CEQL_AlreadyExists>
+    <CEQL_ExistingContainers>Уже есть в: {0}</CEQL_ExistingContainers>
 </LanguageData>

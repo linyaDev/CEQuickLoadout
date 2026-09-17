@@ -84,15 +84,35 @@ public static class Patch_RightClickItem
             "CEQL_StorageMenu".Translate(),
             () => ShowStorageSubmenu(thingDef, itemLabel, selectedThing)));
 
-        // 3. Create new loadout / outfit
+        // 3. Create new loadout / outfit — flag it if one already covers this item
         if (isApparel)
+        {
+            var existingOutfits = FindOutfitsAllowing(thingDef);
+            string createOutfitLabel = "CEQL_CreateOutfit".Translate(itemLabel);
+            if (existingOutfits.Count > 0)
+                createOutfitLabel += " " + "CEQL_AlreadyExists".Translate();
+
             options.Add(new FloatMenuOption(
-                "CEQL_CreateOutfit".Translate(itemLabel),
-                () => CreateOutfit(thingDef)));
+                createOutfitLabel,
+                () => CreateOutfit(thingDef),
+                mouseoverGuiAction: existingOutfits.Count > 0
+                    ? rect => TooltipHandler.TipRegion(rect, "CEQL_ExistingContainers".Translate(string.Join(", ", existingOutfits)))
+                    : null));
+        }
         else
+        {
+            var existingLoadouts = FindLoadoutsContaining(thingDef);
+            string createLoadoutLabel = "CEQL_CreateLoadout".Translate(itemLabel);
+            if (existingLoadouts.Count > 0)
+                createLoadoutLabel += " " + "CEQL_AlreadyExists".Translate();
+
             options.Add(new FloatMenuOption(
-                "CEQL_CreateLoadout".Translate(itemLabel),
-                () => CreateLoadout(thingDef, itemLabel)));
+                createLoadoutLabel,
+                () => CreateLoadout(thingDef, itemLabel),
+                mouseoverGuiAction: existingLoadouts.Count > 0
+                    ? rect => TooltipHandler.TipRegion(rect, "CEQL_ExistingContainers".Translate(string.Join(", ", existingLoadouts)))
+                    : null));
+        }
 
         Find.WindowStack.Add(new FloatMenu(options));
         return true;
@@ -663,6 +683,37 @@ public static class Patch_RightClickItem
 
         Messages.Message("CEQL_ItemAddedToStorage".Translate(itemLabel, newLabel),
             MessageTypeDefOf.PositiveEvent, false);
+    }
+
+    private static List<string> FindLoadoutsContaining(ThingDef def)
+    {
+        var result = new List<string>();
+        foreach (var loadout in LoadoutManager.Loadouts)
+        {
+            if (loadout.defaultLoadout) continue;
+            foreach (var slot in loadout.Slots)
+            {
+                if (slot.thingDef == def)
+                {
+                    result.Add(loadout.label);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    private static List<string> FindOutfitsAllowing(ThingDef def)
+    {
+        var result = new List<string>();
+        var outfits = Current.Game?.outfitDatabase?.AllOutfits;
+        if (outfits == null) return result;
+        foreach (var outfit in outfits)
+        {
+            if (outfit.filter.Allows(def))
+                result.Add(outfit.label);
+        }
+        return result;
     }
 
     private static void CreateOutfit(ThingDef def)

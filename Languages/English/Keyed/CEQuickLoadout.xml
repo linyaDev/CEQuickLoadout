@@ -48,4 +48,6 @@
     <CEQL_LoadoutMenu>Loadout</CEQL_LoadoutMenu>
     <CEQL_OutfitMenu>Outfit</CEQL_OutfitMenu>
     <CEQL_DietMenu>Diet</CEQL_DietMenu>
+    <CEQL_AlreadyExists>(already exists)</CEQL_AlreadyExists>
+    <CEQL_ExistingContainers>Already in: {0}</CEQL_ExistingContainers>
 </LanguageData>
