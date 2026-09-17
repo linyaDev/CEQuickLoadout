@@ -617,16 +617,32 @@ public static class Patch_RightClickItem
             canTargetItems = false,
             canTargetPawns = false,
             canTargetSelf = false,
-            validator = t => map.haulDestinationManager.SlotGroupAt(t.Cell)?.parent != null
+            validator = t => CanStoreHere(map, t.Cell, def)
         };
 
         Find.Targeter.BeginTargeting(targetParams, target => OnStorageTargeted(target, def, itemLabel, thing, move, map));
     }
 
+    // A storage building's own fixed filter (GetParentStoreSettings) reflects what it's
+    // physically capable of holding (e.g. a pallet built only for a specific category) —
+    // separate from the player-editable filter we're about to change. Zones have no such
+    // fixed filter, so anything goes there.
+    private static bool CanStoreHere(Map map, IntVec3 cell, ThingDef def)
+    {
+        var parent = map.haulDestinationManager.SlotGroupAt(cell)?.parent;
+        if (parent == null) return false;
+        var parentSettings = parent.GetParentStoreSettings();
+        return parentSettings == null || parentSettings.filter.Allows(def);
+    }
+
     private static void OnStorageTargeted(LocalTargetInfo target, ThingDef def, string itemLabel, Thing thing, bool move, Map map)
     {
         var parent = map.haulDestinationManager.SlotGroupAt(target.Cell)?.parent;
-        if (parent == null) return;
+        if (parent == null || !CanStoreHere(map, target.Cell, def))
+        {
+            Messages.Message("CEQL_StorageCantHold".Translate(itemLabel), MessageTypeDefOf.RejectInput, false);
+            return;
+        }
 
         parent.GetStoreSettings().filter.SetAllow(def, true);
         string newLabel = parent.SlotYielderLabel();

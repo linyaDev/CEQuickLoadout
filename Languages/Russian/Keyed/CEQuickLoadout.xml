@@ -44,4 +44,5 @@
     <CEQL_StorageMove>Перенести</CEQL_StorageMove>
     <CEQL_ItemAddedToStorage>«{0}» добавлен на склад «{1}»</CEQL_ItemAddedToStorage>
     <CEQL_ItemMovedToStorage>«{0}» перенесён со склада «{1}» на «{2}»</CEQL_ItemMovedToStorage>
+    <CEQL_StorageCantHold>Этот склад не поддерживает «{0}»</CEQL_StorageCantHold>
 </LanguageData>
