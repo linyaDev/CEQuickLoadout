@@ -84,20 +84,12 @@ public static class Patch_RightClickItem
             "CEQL_StorageMenu".Translate(),
             () => ShowStorageSubmenu(thingDef, itemLabel, selectedThing)));
 
-        // 3. Create new loadout / outfit — flag it if one already covers this item
+        // 3. Create new loadout / outfit — flag it if a loadout already covers this item
         if (isApparel)
         {
-            var existingOutfits = FindOutfitsAllowing(thingDef);
-            string createOutfitLabel = "CEQL_CreateOutfit".Translate(itemLabel);
-            if (existingOutfits.Count > 0)
-                createOutfitLabel += " " + "CEQL_AlreadyExists".Translate();
-
             options.Add(new FloatMenuOption(
-                createOutfitLabel,
-                () => CreateOutfit(thingDef),
-                mouseoverGuiAction: existingOutfits.Count > 0
-                    ? rect => TooltipHandler.TipRegion(rect, "CEQL_ExistingContainers".Translate(string.Join(", ", existingOutfits)))
-                    : null));
+                "CEQL_CreateOutfit".Translate(itemLabel),
+                () => CreateOutfit(thingDef)));
         }
         else
         {
@@ -720,19 +712,6 @@ public static class Patch_RightClickItem
             "CEQL_CreateNew".Translate(),
             () => CreateLoadout(def, itemLabel)));
         Find.WindowStack.Add(new FloatMenu(subOptions));
-    }
-
-    private static List<string> FindOutfitsAllowing(ThingDef def)
-    {
-        var result = new List<string>();
-        var outfits = Current.Game?.outfitDatabase?.AllOutfits;
-        if (outfits == null) return result;
-        foreach (var outfit in outfits)
-        {
-            if (outfit.filter.Allows(def))
-                result.Add(outfit.label);
-        }
-        return result;
     }
 
     private static void CreateOutfit(ThingDef def)
