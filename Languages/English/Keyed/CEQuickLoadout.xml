@@ -42,6 +42,7 @@
     <CEQL_StorageMenu>Storage</CEQL_StorageMenu>
     <CEQL_StorageAdd>Add</CEQL_StorageAdd>
     <CEQL_StorageMove>Move</CEQL_StorageMove>
+    <CEQL_StorageRemove>Remove</CEQL_StorageRemove>
     <CEQL_ItemAddedToStorage>"{0}" added to storage "{1}"</CEQL_ItemAddedToStorage>
     <CEQL_ItemMovedToStorage>"{0}" moved from storage "{1}" to "{2}"</CEQL_ItemMovedToStorage>
     <CEQL_StorageCantHold>This storage cannot hold "{0}"</CEQL_StorageCantHold>
@@ -50,5 +51,6 @@
     <CEQL_DietMenu>Diet</CEQL_DietMenu>
     <CEQL_EditLoadoutMenu>Edit loadout with "{0}"</CEQL_EditLoadoutMenu>
     <CEQL_AddByColonistTop>Add to colonist</CEQL_AddByColonistTop>
+    <CEQL_ItemRemovedFromStorage>"{0}" removed from storage "{1}"</CEQL_ItemRemovedFromStorage>
     <CEQL_CreateNew>Create new</CEQL_CreateNew>
 </LanguageData>

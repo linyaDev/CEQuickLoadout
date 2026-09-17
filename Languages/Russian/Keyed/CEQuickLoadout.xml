@@ -42,6 +42,7 @@
     <CEQL_StorageMenu>Склад</CEQL_StorageMenu>
     <CEQL_StorageAdd>Добавить</CEQL_StorageAdd>
     <CEQL_StorageMove>Перенести</CEQL_StorageMove>
+    <CEQL_StorageRemove>Удалить</CEQL_StorageRemove>
     <CEQL_ItemAddedToStorage>«{0}» добавлен на склад «{1}»</CEQL_ItemAddedToStorage>
     <CEQL_ItemMovedToStorage>«{0}» перенесён со склада «{1}» на «{2}»</CEQL_ItemMovedToStorage>
     <CEQL_StorageCantHold>Этот склад не поддерживает «{0}»</CEQL_StorageCantHold>
@@ -50,5 +51,6 @@
     <CEQL_DietMenu>Диета</CEQL_DietMenu>
     <CEQL_EditLoadoutMenu>Изменить лоадаут с «{0}»</CEQL_EditLoadoutMenu>
     <CEQL_AddByColonistTop>Добавить колонисту</CEQL_AddByColonistTop>
+    <CEQL_ItemRemovedFromStorage>«{0}» удалён со склада «{1}»</CEQL_ItemRemovedFromStorage>
     <CEQL_CreateNew>Создать новый</CEQL_CreateNew>
 </LanguageData>

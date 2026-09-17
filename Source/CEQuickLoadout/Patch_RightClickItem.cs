@@ -615,6 +615,7 @@ public static class Patch_RightClickItem
         {
             new FloatMenuOption("CEQL_StorageAdd".Translate(), () => StartStorageTargeting(def, itemLabel, thing, move: false)),
             new FloatMenuOption("CEQL_StorageMove".Translate(), () => StartStorageTargeting(def, itemLabel, thing, move: true)),
+            new FloatMenuOption("CEQL_StorageRemove".Translate(), () => StartStorageRemoveTargeting(def, itemLabel)),
         };
         Find.WindowStack.Add(new FloatMenu(subOptions));
     }
@@ -679,6 +680,37 @@ public static class Patch_RightClickItem
 
         Messages.Message("CEQL_ItemAddedToStorage".Translate(itemLabel, newLabel),
             MessageTypeDefOf.PositiveEvent, false);
+    }
+
+    // Disallows the item's def in whichever storage the player clicks, regardless of
+    // whether the item is currently sitting there — a plain filter edit, no physical
+    // capability check needed since disallowing is always valid.
+    private static void StartStorageRemoveTargeting(ThingDef def, string itemLabel)
+    {
+        var map = Find.CurrentMap;
+        if (map == null) return;
+
+        var targetParams = new TargetingParameters
+        {
+            canTargetLocations = true,
+            canTargetBuildings = true,
+            canTargetItems = false,
+            canTargetPawns = false,
+            canTargetSelf = false,
+            validator = t => map.haulDestinationManager.SlotGroupAt(t.Cell)?.parent != null
+        };
+
+        Find.Targeter.BeginTargeting(targetParams, target => OnStorageRemoveTargeted(target, def, itemLabel, map));
+    }
+
+    private static void OnStorageRemoveTargeted(LocalTargetInfo target, ThingDef def, string itemLabel, Map map)
+    {
+        var parent = map.haulDestinationManager.SlotGroupAt(target.Cell)?.parent;
+        if (parent == null) return;
+
+        parent.GetStoreSettings().filter.SetAllow(def, false);
+        Messages.Message("CEQL_ItemRemovedFromStorage".Translate(itemLabel, parent.SlotYielderLabel()),
+            MessageTypeDefOf.NeutralEvent, false);
     }
 
     private static List<Loadout> FindLoadoutsContaining(ThingDef def)
