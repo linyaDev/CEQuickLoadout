@@ -32,7 +32,9 @@ public static class Patch_RightClickItem
     public static bool TryShowMenu(Thing selectedThing)
     {
         if (selectedThing?.Map != Find.CurrentMap) return false;
-        if (selectedThing.def.category != ThingCategory.Item) return false;
+
+        if (selectedThing.def.category != ThingCategory.Item)
+            return selectedThing is ISlotGroupParent && TryShowStorageContentsMenu(selectedThing);
 
         var loadouts = LoadoutManager.Loadouts;
         if (loadouts == null) return false;
@@ -131,6 +133,28 @@ public static class Patch_RightClickItem
                 "CEQL_CreateLoadout".Translate(itemLabel),
                 () => CreateLoadout(thingDef, itemLabel)));
 
+        Find.WindowStack.Add(new FloatMenu(options));
+        return true;
+    }
+
+    // Right-clicking a selected storage building (shelf, pallet, etc.) lists the items
+    // held inside it instead of the usual building menu, so picking a cramped item out
+    // of a full shelf doesn't require pixel-perfect clicking on its tiny icon. Choosing
+    // an entry re-enters TryShowMenu for that specific item, showing our normal menu.
+    private static bool TryShowStorageContentsMenu(Thing storageThing)
+    {
+        var slotGroup = storageThing.Map.haulDestinationManager.SlotGroupAt(storageThing.Position);
+        var heldThings = slotGroup?.HeldThings?.ToList();
+        if (heldThings == null || heldThings.Count == 0) return false;
+
+        var options = new List<FloatMenuOption>();
+        foreach (var item in heldThings)
+        {
+            var it = item;
+            options.Add(new FloatMenuOption(
+                it.LabelCap + " x" + it.stackCount,
+                () => TryShowMenu(it)));
+        }
         Find.WindowStack.Add(new FloatMenu(options));
         return true;
     }
