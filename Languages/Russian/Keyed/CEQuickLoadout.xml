@@ -50,4 +50,6 @@
     <CEQL_DietMenu>Диета</CEQL_DietMenu>
     <CEQL_AlreadyExists>(уже есть)</CEQL_AlreadyExists>
     <CEQL_ExistingContainers>Уже есть в: {0}</CEQL_ExistingContainers>
+    <CEQL_EditLoadoutMenu>Изменить лоадаут с «{0}»</CEQL_EditLoadoutMenu>
+    <CEQL_CreateNew>Создать новый</CEQL_CreateNew>
 </LanguageData>

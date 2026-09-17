@@ -102,16 +102,14 @@ public static class Patch_RightClickItem
         else
         {
             var existingLoadouts = FindLoadoutsContaining(thingDef);
-            string createLoadoutLabel = "CEQL_CreateLoadout".Translate(itemLabel);
             if (existingLoadouts.Count > 0)
-                createLoadoutLabel += " " + "CEQL_AlreadyExists".Translate();
-
-            options.Add(new FloatMenuOption(
-                createLoadoutLabel,
-                () => CreateLoadout(thingDef, itemLabel),
-                mouseoverGuiAction: existingLoadouts.Count > 0
-                    ? rect => TooltipHandler.TipRegion(rect, "CEQL_ExistingContainers".Translate(string.Join(", ", existingLoadouts)))
-                    : null));
+                options.Add(new FloatMenuOption(
+                    "CEQL_EditLoadoutMenu".Translate(itemLabel),
+                    () => ShowEditLoadoutSubmenu(existingLoadouts, thingDef, itemLabel)));
+            else
+                options.Add(new FloatMenuOption(
+                    "CEQL_CreateLoadout".Translate(itemLabel),
+                    () => CreateLoadout(thingDef, itemLabel)));
         }
 
         Find.WindowStack.Add(new FloatMenu(options));
@@ -685,9 +683,9 @@ public static class Patch_RightClickItem
             MessageTypeDefOf.PositiveEvent, false);
     }
 
-    private static List<string> FindLoadoutsContaining(ThingDef def)
+    private static List<Loadout> FindLoadoutsContaining(ThingDef def)
     {
-        var result = new List<string>();
+        var result = new List<Loadout>();
         foreach (var loadout in LoadoutManager.Loadouts)
         {
             if (loadout.defaultLoadout) continue;
@@ -695,12 +693,33 @@ public static class Patch_RightClickItem
             {
                 if (slot.thingDef == def)
                 {
-                    result.Add(loadout.label);
+                    result.Add(loadout);
                     break;
                 }
             }
         }
         return result;
+    }
+
+    // Shown instead of a plain "Create loadout" when the item already sits in one or
+    // more loadouts: lets the player jump straight to editing one of those, or fall
+    // back to creating a brand new loadout as the last entry.
+    private static void ShowEditLoadoutSubmenu(List<Loadout> loadouts, ThingDef def, string itemLabel)
+    {
+        var subOptions = new List<FloatMenuOption>();
+        foreach (var loadout in loadouts)
+        {
+            var lo = loadout;
+            string tooltip = BuildLoadoutSlotsTooltip(lo);
+            subOptions.Add(new FloatMenuOption(
+                lo.label,
+                () => Find.WindowStack.Add(new Dialog_ManageLoadouts(lo)),
+                mouseoverGuiAction: rect => TooltipHandler.TipRegion(rect, tooltip)));
+        }
+        subOptions.Add(new FloatMenuOption(
+            "CEQL_CreateNew".Translate(),
+            () => CreateLoadout(def, itemLabel)));
+        Find.WindowStack.Add(new FloatMenu(subOptions));
     }
 
     private static List<string> FindOutfitsAllowing(ThingDef def)
