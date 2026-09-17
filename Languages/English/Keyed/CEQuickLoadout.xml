@@ -45,4 +45,7 @@
     <CEQL_ItemAddedToStorage>"{0}" added to storage "{1}"</CEQL_ItemAddedToStorage>
     <CEQL_ItemMovedToStorage>"{0}" moved from storage "{1}" to "{2}"</CEQL_ItemMovedToStorage>
     <CEQL_StorageCantHold>This storage cannot hold "{0}"</CEQL_StorageCantHold>
+    <CEQL_LoadoutMenu>Loadout</CEQL_LoadoutMenu>
+    <CEQL_OutfitMenu>Outfit</CEQL_OutfitMenu>
+    <CEQL_DietMenu>Diet</CEQL_DietMenu>
 </LanguageData>

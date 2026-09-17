@@ -56,66 +56,27 @@ public static class Patch_RightClickItem
         bool isApparel = thingDef.IsApparel;
         bool isFood = thingDef.IsIngestible;
 
-        // Food policy info
+        // Diet: info tooltip + add/remove, nested under one category entry
         if (isFood)
         {
-            string dietInfo = GetDietInfo(thingDef);
             options.Add(new FloatMenuOption(
-                "CEQL_DietInfo".Translate(),
-                () => {},
-                mouseoverGuiAction: dietInfo != null
-                    ? rect => TooltipHandler.TipRegion(rect, dietInfo)
-                    : null));
-
-            options.Add(new FloatMenuOption(
-                "CEQL_AddToDiet".Translate(),
-                () => ShowAddToDietSubmenu(thingDef, itemLabel)));
-
-            options.Add(new FloatMenuOption(
-                "CEQL_RemoveFromDiet".Translate(),
-                () => ShowRemoveFromDietSubmenu(thingDef, itemLabel)));
+                "CEQL_DietMenu".Translate(),
+                () => ShowDietSubmenu(thingDef, itemLabel)));
         }
 
-        // Outfit info for apparel
+        // Outfit: info tooltip + add/remove/assign, nested under one category entry
         if (isApparel)
         {
-            string outfitInfo = GetOutfitInfo(thingDef);
             options.Add(new FloatMenuOption(
-                "CEQL_OutfitInfo".Translate(),
-                () => {},
-                mouseoverGuiAction: outfitInfo != null
-                    ? rect => TooltipHandler.TipRegion(rect, outfitInfo)
-                    : null));
-        }
-
-        if (isApparel)
-        {
-            // 1a. Add to outfit
-            options.Add(new FloatMenuOption(
-                "CEQL_AddToOutfit".Translate(),
-                () => ShowAddToOutfitSubmenu(thingDef, itemLabel)));
-
-            // 2a. Remove from outfit
-            options.Add(new FloatMenuOption(
-                "CEQL_RemoveFromOutfit".Translate(),
-                () => ShowRemoveFromOutfitSubmenu(thingDef, itemLabel)));
-
-            // 3a. Assign outfit to colonist
-            options.Add(new FloatMenuOption(
-                "CEQL_AssignOutfit".Translate(),
-                () => ShowAssignOutfitColonistSubmenu()));
+                "CEQL_OutfitMenu".Translate(),
+                () => ShowOutfitSubmenu(thingDef, itemLabel)));
         }
         else
         {
-            // 1. Add to loadout — submenu
+            // Loadout: add/remove, nested under one category entry
             options.Add(new FloatMenuOption(
-                "CEQL_AddToColonistMenu".Translate(),
-                () => ShowAddSubmenu(thingDef, itemLabel)));
-
-            // 2. Remove from loadout — submenu
-            options.Add(new FloatMenuOption(
-                "CEQL_RemoveFromColonistMenu".Translate(),
-                () => ShowRemoveColonistSubmenu()));
+                "CEQL_LoadoutMenu".Translate(),
+                () => ShowLoadoutSubmenu(thingDef, itemLabel)));
         }
 
         // Storage: add/move to a stockpile zone or storage building, picked by clicking on the map
@@ -231,6 +192,16 @@ public static class Patch_RightClickItem
         }
 
         return sb.ToString().TrimEnd();
+    }
+
+    private static void ShowLoadoutSubmenu(ThingDef def, string itemLabel)
+    {
+        var subOptions = new List<FloatMenuOption>
+        {
+            new FloatMenuOption("CEQL_AddToColonistMenu".Translate(), () => ShowAddSubmenu(def, itemLabel)),
+            new FloatMenuOption("CEQL_RemoveFromColonistMenu".Translate(), () => ShowRemoveColonistSubmenu()),
+        };
+        Find.WindowStack.Add(new FloatMenu(subOptions));
     }
 
     private static void ShowAddSubmenu(ThingDef def, string itemLabel)
@@ -436,6 +407,22 @@ public static class Patch_RightClickItem
             Find.WindowStack.Add(new FloatMenu(slotOptions));
     }
 
+    private static void ShowOutfitSubmenu(ThingDef def, string itemLabel)
+    {
+        var subOptions = new List<FloatMenuOption>();
+        string outfitInfo = GetOutfitInfo(def);
+        subOptions.Add(new FloatMenuOption(
+            "CEQL_OutfitInfo".Translate(),
+            () => {},
+            mouseoverGuiAction: outfitInfo != null
+                ? rect => TooltipHandler.TipRegion(rect, outfitInfo)
+                : null));
+        subOptions.Add(new FloatMenuOption("CEQL_AddToOutfit".Translate(), () => ShowAddToOutfitSubmenu(def, itemLabel)));
+        subOptions.Add(new FloatMenuOption("CEQL_RemoveFromOutfit".Translate(), () => ShowRemoveFromOutfitSubmenu(def, itemLabel)));
+        subOptions.Add(new FloatMenuOption("CEQL_AssignOutfit".Translate(), () => ShowAssignOutfitColonistSubmenu()));
+        Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
     private static void ShowAddToOutfitSubmenu(ThingDef def, string itemLabel)
     {
         var outfits = Current.Game?.outfitDatabase?.AllOutfits;
@@ -539,6 +526,21 @@ public static class Patch_RightClickItem
                 sb.AppendLine("   " + diet.label);
         }
         return sb.Length > 0 ? sb.ToString().TrimEnd() : null;
+    }
+
+    private static void ShowDietSubmenu(ThingDef def, string itemLabel)
+    {
+        var subOptions = new List<FloatMenuOption>();
+        string dietInfo = GetDietInfo(def);
+        subOptions.Add(new FloatMenuOption(
+            "CEQL_DietInfo".Translate(),
+            () => {},
+            mouseoverGuiAction: dietInfo != null
+                ? rect => TooltipHandler.TipRegion(rect, dietInfo)
+                : null));
+        subOptions.Add(new FloatMenuOption("CEQL_AddToDiet".Translate(), () => ShowAddToDietSubmenu(def, itemLabel)));
+        subOptions.Add(new FloatMenuOption("CEQL_RemoveFromDiet".Translate(), () => ShowRemoveFromDietSubmenu(def, itemLabel)));
+        Find.WindowStack.Add(new FloatMenu(subOptions));
     }
 
     private static void ShowAddToDietSubmenu(ThingDef def, string itemLabel)

@@ -45,4 +45,7 @@
     <CEQL_ItemAddedToStorage>«{0}» добавлен на склад «{1}»</CEQL_ItemAddedToStorage>
     <CEQL_ItemMovedToStorage>«{0}» перенесён со склада «{1}» на «{2}»</CEQL_ItemMovedToStorage>
     <CEQL_StorageCantHold>Этот склад не поддерживает «{0}»</CEQL_StorageCantHold>
+    <CEQL_LoadoutMenu>Лоадаут</CEQL_LoadoutMenu>
+    <CEQL_OutfitMenu>Гардероб</CEQL_OutfitMenu>
+    <CEQL_DietMenu>Диета</CEQL_DietMenu>
 </LanguageData>
