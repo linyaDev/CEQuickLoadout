@@ -116,6 +116,11 @@ public static class Patch_RightClickItem
                 () => ShowRemoveColonistSubmenu()));
         }
 
+        // Storage: add/move to a stockpile zone or storage building, picked by clicking on the map
+        options.Add(new FloatMenuOption(
+            "CEQL_StorageMenu".Translate(),
+            () => ShowStorageSubmenu(thingDef, itemLabel, selectedThing)));
+
         // 3. Create new loadout / outfit
         if (isApparel)
             options.Add(new FloatMenuOption(
@@ -560,6 +565,62 @@ public static class Patch_RightClickItem
         }
         if (subOptions.Count > 0)
             Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    private static void ShowStorageSubmenu(ThingDef def, string itemLabel, Thing thing)
+    {
+        var subOptions = new List<FloatMenuOption>
+        {
+            new FloatMenuOption("CEQL_StorageAdd".Translate(), () => StartStorageTargeting(def, itemLabel, thing, move: false)),
+            new FloatMenuOption("CEQL_StorageMove".Translate(), () => StartStorageTargeting(def, itemLabel, thing, move: true)),
+        };
+        Find.WindowStack.Add(new FloatMenu(subOptions));
+    }
+
+    // Lets the player click a stockpile zone or storage building on the map, then
+    // allows the item's def in that storage's filter. "Move" additionally disallows
+    // the def in whatever storage the clicked item is currently sitting in, so vanilla
+    // hauling picks it up and relocates it to the newly allowed storage.
+    private static void StartStorageTargeting(ThingDef def, string itemLabel, Thing thing, bool move)
+    {
+        var map = Find.CurrentMap;
+        if (map == null) return;
+
+        var targetParams = new TargetingParameters
+        {
+            canTargetLocations = true,
+            canTargetBuildings = true,
+            canTargetItems = false,
+            canTargetPawns = false,
+            canTargetSelf = false,
+            validator = t => map.haulDestinationManager.SlotGroupAt(t.Cell)?.parent != null
+        };
+
+        Find.Targeter.BeginTargeting(targetParams, target => OnStorageTargeted(target, def, itemLabel, thing, move, map));
+    }
+
+    private static void OnStorageTargeted(LocalTargetInfo target, ThingDef def, string itemLabel, Thing thing, bool move, Map map)
+    {
+        var parent = map.haulDestinationManager.SlotGroupAt(target.Cell)?.parent;
+        if (parent == null) return;
+
+        parent.GetStoreSettings().filter.SetAllow(def, true);
+        string newLabel = parent.SlotYielderLabel();
+
+        if (move && thing?.Spawned == true)
+        {
+            var oldParent = thing.Map.haulDestinationManager.SlotGroupAt(thing.Position)?.parent;
+            if (oldParent != null && oldParent != parent)
+            {
+                oldParent.GetStoreSettings().filter.SetAllow(def, false);
+                Messages.Message("CEQL_ItemMovedToStorage".Translate(itemLabel, oldParent.SlotYielderLabel(), newLabel),
+                    MessageTypeDefOf.PositiveEvent, false);
+                return;
+            }
+        }
+
+        Messages.Message("CEQL_ItemAddedToStorage".Translate(itemLabel, newLabel),
+            MessageTypeDefOf.PositiveEvent, false);
     }
 
     private static void CreateOutfit(ThingDef def)

@@ -39,4 +39,9 @@
     <CEQL_SettingUpgradeSearch>Автопоиск лучшего оружия</CEQL_SettingUpgradeSearch>
     <CEQL_SettingUpgradeSearchDesc>Пешки периодически проверяют, есть ли на карте оружие из лоадаута лучшего качества.</CEQL_SettingUpgradeSearchDesc>
     <CEQL_SettingDumpDebug>Вывести отладку в лог</CEQL_SettingDumpDebug>
+    <CEQL_StorageMenu>Склад</CEQL_StorageMenu>
+    <CEQL_StorageAdd>Добавить</CEQL_StorageAdd>
+    <CEQL_StorageMove>Перенести</CEQL_StorageMove>
+    <CEQL_ItemAddedToStorage>«{0}» добавлен на склад «{1}»</CEQL_ItemAddedToStorage>
+    <CEQL_ItemMovedToStorage>«{0}» перенесён со склада «{1}» на «{2}»</CEQL_ItemMovedToStorage>
 </LanguageData>

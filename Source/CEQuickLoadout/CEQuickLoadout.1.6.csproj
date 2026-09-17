@@ -10,8 +10,8 @@
     <DefineConstants>$(DefineConstants);RIMWORLD_16</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <RimWorldPath>D:\SteamLibrary\steamapps\common\RimWorld</RimWorldPath>
-    <HSKPath>D:\SteamLibrary\steamapps\common\RimWorld</HSKPath>
+    <RimWorldPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld</RimWorldPath>
+    <HSKPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld</HSKPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp" Publicize="true">

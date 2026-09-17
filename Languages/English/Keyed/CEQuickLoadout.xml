@@ -39,4 +39,9 @@
     <CEQL_SettingUpgradeSearch>Auto-search for better weapons</CEQL_SettingUpgradeSearch>
     <CEQL_SettingUpgradeSearchDesc>Pawns periodically check if a higher-quality version of their loadout weapon is available on the map.</CEQL_SettingUpgradeSearchDesc>
     <CEQL_SettingDumpDebug>Dump debug info to log</CEQL_SettingDumpDebug>
+    <CEQL_StorageMenu>Storage</CEQL_StorageMenu>
+    <CEQL_StorageAdd>Add</CEQL_StorageAdd>
+    <CEQL_StorageMove>Move</CEQL_StorageMove>
+    <CEQL_ItemAddedToStorage>"{0}" added to storage "{1}"</CEQL_ItemAddedToStorage>
+    <CEQL_ItemMovedToStorage>"{0}" moved from storage "{1}" to "{2}"</CEQL_ItemMovedToStorage>
 </LanguageData>
