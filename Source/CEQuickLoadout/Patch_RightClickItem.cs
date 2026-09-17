@@ -615,7 +615,7 @@ public static class Patch_RightClickItem
         {
             new FloatMenuOption("CEQL_StorageAdd".Translate(), () => StartStorageTargeting(def, itemLabel, thing, move: false)),
             new FloatMenuOption("CEQL_StorageMove".Translate(), () => StartStorageTargeting(def, itemLabel, thing, move: true)),
-            new FloatMenuOption("CEQL_StorageRemove".Translate(), () => StartStorageRemoveTargeting(def, itemLabel)),
+            new FloatMenuOption("CEQL_StorageRemove".Translate(), () => RemoveFromCurrentStorage(def, itemLabel, thing)),
         };
         Find.WindowStack.Add(new FloatMenu(subOptions));
     }
@@ -682,31 +682,17 @@ public static class Patch_RightClickItem
             MessageTypeDefOf.PositiveEvent, false);
     }
 
-    // Disallows the item's def in whichever storage the player clicks, regardless of
-    // whether the item is currently sitting there — a plain filter edit, no physical
-    // capability check needed since disallowing is always valid.
-    private static void StartStorageRemoveTargeting(ThingDef def, string itemLabel)
+    // Immediately disallows the item's def in whatever storage the clicked item is
+    // currently sitting in — no mouse targeting needed, unlike Add/Move, since the
+    // storage to remove it from is already known.
+    private static void RemoveFromCurrentStorage(ThingDef def, string itemLabel, Thing thing)
     {
-        var map = Find.CurrentMap;
-        if (map == null) return;
-
-        var targetParams = new TargetingParameters
+        var parent = thing?.Spawned == true ? thing.Map.haulDestinationManager.SlotGroupAt(thing.Position)?.parent : null;
+        if (parent == null)
         {
-            canTargetLocations = true,
-            canTargetBuildings = true,
-            canTargetItems = false,
-            canTargetPawns = false,
-            canTargetSelf = false,
-            validator = t => map.haulDestinationManager.SlotGroupAt(t.Cell)?.parent != null
-        };
-
-        Find.Targeter.BeginTargeting(targetParams, target => OnStorageRemoveTargeted(target, def, itemLabel, map));
-    }
-
-    private static void OnStorageRemoveTargeted(LocalTargetInfo target, ThingDef def, string itemLabel, Map map)
-    {
-        var parent = map.haulDestinationManager.SlotGroupAt(target.Cell)?.parent;
-        if (parent == null) return;
+            Messages.Message("CEQL_NotInStorage".Translate(itemLabel), MessageTypeDefOf.RejectInput, false);
+            return;
+        }
 
         parent.GetStoreSettings().filter.SetAllow(def, false);
         Messages.Message("CEQL_ItemRemovedFromStorage".Translate(itemLabel, parent.SlotYielderLabel()),

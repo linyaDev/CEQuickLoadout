@@ -52,5 +52,6 @@
     <CEQL_EditLoadoutMenu>Изменить лоадаут с «{0}»</CEQL_EditLoadoutMenu>
     <CEQL_AddByColonistTop>Добавить колонисту</CEQL_AddByColonistTop>
     <CEQL_ItemRemovedFromStorage>«{0}» удалён со склада «{1}»</CEQL_ItemRemovedFromStorage>
+    <CEQL_NotInStorage>«{0}» не находится на складе</CEQL_NotInStorage>
     <CEQL_CreateNew>Создать новый</CEQL_CreateNew>
 </LanguageData>

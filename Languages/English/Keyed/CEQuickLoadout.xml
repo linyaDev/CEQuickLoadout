@@ -52,5 +52,6 @@
     <CEQL_EditLoadoutMenu>Edit loadout with "{0}"</CEQL_EditLoadoutMenu>
     <CEQL_AddByColonistTop>Add to colonist</CEQL_AddByColonistTop>
     <CEQL_ItemRemovedFromStorage>"{0}" removed from storage "{1}"</CEQL_ItemRemovedFromStorage>
+    <CEQL_NotInStorage>"{0}" is not in a storage</CEQL_NotInStorage>
     <CEQL_CreateNew>Create new</CEQL_CreateNew>
 </LanguageData>
