@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <!--
+    Auto weapon upgrade: per-weapon comparison stat.
+    Weapons listed here are compared by the given stat (higher = better).
+    Weapons NOT listed are compared by quality (default).
+
+    Example:
+    <li>
+        <weapon>Gun_AssaultRifle</weapon>
+        <stat>MarketValue</stat>
+    </li>
+    -->
+    <CEQuickLoadout.WeaponUpgradeRuleDef>
+        <defName>CEQL_WeaponUpgradeRules</defName>
+        <rules>
+            <li>
+                <weapon>TFJ_Tool_Mining_Pickaxe</weapon>
+                <stat>MiningSpeed</stat>
+            </li>
+            <li>
+                <weapon>TFJ_Tool_Building_Hammer</weapon>
+                <stat>ConstructionSpeed</stat>
+            </li>
+            <li>
+                <weapon>TFJ_Tool_Woodcutting_Handaxe</weapon>
+                <stat>TreeFellingSpeed</stat>
+            </li>
+            <li>
+                <weapon>TFJ_Tool_Sickle</weapon>
+                <stat>PlantWorkSpeed</stat>
+            </li>
+            <li>
+                <weapon>MeleeWeapon_Monkeywrench</weapon>
+                <stat>ConstructionSpeed</stat>
+            </li>
+        </rules>
+    </CEQuickLoadout.WeaponUpgradeRuleDef>
+</Defs>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <CEQL_CreateLoadout>Создать лоадаут с «{0}»</CEQL_CreateLoadout>
+    <CEQL_AddToColonist>Добавить → {0}</CEQL_AddToColonist>
+    <CEQL_AddToColonistMenu>Добавить в лоадаут</CEQL_AddToColonistMenu>
+    <CEQL_AddByColonist>Колонисту</CEQL_AddByColonist>
+    <CEQL_AddByLoadout>В лоадаут</CEQL_AddByLoadout>
+    <CEQL_ItemAddedToPawn>«{0}» добавлен в лоадаут {1}</CEQL_ItemAddedToPawn>
+    <CEQL_ItemAddedToLoadout>«{0}» добавлен в лоадаут «{1}»</CEQL_ItemAddedToLoadout>
+    <CEQL_Loadout>Лоадаут</CEQL_Loadout>
+    <CEQL_NoLoadout>Нет лоадаута</CEQL_NoLoadout>
+    <CEQL_HoldItems>Удержание</CEQL_HoldItems>
+    <CEQL_OutfitInfo>В гардеробе</CEQL_OutfitInfo>
+    <CEQL_AddToOutfit>Добавить в гардероб</CEQL_AddToOutfit>
+    <CEQL_RemoveFromOutfit>Удалить из гардероба</CEQL_RemoveFromOutfit>
+    <CEQL_ItemAddedToOutfit>«{0}» добавлен в гардероб «{1}»</CEQL_ItemAddedToOutfit>
+    <CEQL_ItemRemovedFromOutfit>«{0}» удалён из гардероба «{1}»</CEQL_ItemRemovedFromOutfit>
+    <CEQL_AssignOutfit>Сменить гардероб колонисту</CEQL_AssignOutfit>
+    <CEQL_OutfitAssigned>Гардероб «{0}» назначен {1}</CEQL_OutfitAssigned>
+    <CEQL_ChangeOutfitFor>Сменить гардероб: {0} ({1})</CEQL_ChangeOutfitFor>
+    <CEQL_CreateOutfit>Создать гардероб с «{0}»</CEQL_CreateOutfit>
+    <CEQL_DietInfo>В диете</CEQL_DietInfo>
+    <CEQL_AddToDiet>Добавить в диету</CEQL_AddToDiet>
+    <CEQL_RemoveFromDiet>Удалить из диеты</CEQL_RemoveFromDiet>
+    <CEQL_ItemAddedToDiet>«{0}» добавлен в диету «{1}»</CEQL_ItemAddedToDiet>
+    <CEQL_ItemRemovedFromDiet>«{0}» удалён из диеты «{1}»</CEQL_ItemRemovedFromDiet>
+    <CEQL_AmmoInfo>Патроны (наведите)</CEQL_AmmoInfo>
+    <CEQL_MagazineSize>Магазин</CEQL_MagazineSize>
+    <CEQL_AmmoTypes>Совместимые патроны</CEQL_AmmoTypes>
+    <CEQL_LoadoutWarningHeader>Проблемы с лоадаутом:</CEQL_LoadoutWarningHeader>
+    <CEQL_TipWeaponLine>Нет оружия: {0} ({1}/{2})</CEQL_TipWeaponLine>
+    <CEQL_TipAmmoLine>Мало патронов: {0} ({1}/{2})</CEQL_TipAmmoLine>
+    <CEQL_RemoveFromColonistMenu>Удалить из лоадаута</CEQL_RemoveFromColonistMenu>
+    <CEQL_RemoveByColonist>У колониста</CEQL_RemoveByColonist>
+    <CEQL_RemoveByLoadout>Из лоадаута</CEQL_RemoveByLoadout>
+    <CEQL_ItemRemovedFromPawn>«{0}» удалён из лоадаута {1}</CEQL_ItemRemovedFromPawn>
+    <CEQL_ItemRemovedFromLoadout>«{0}» удалён из лоадаута «{1}»</CEQL_ItemRemovedFromLoadout>
+    <CEQL_UpgradeFound>{0} нашёл оружие лучше: {1}</CEQL_UpgradeFound>
+    <CEQL_SettingUpgradeSearch>Автопоиск лучшего оружия</CEQL_SettingUpgradeSearch>
+    <CEQL_SettingUpgradeSearchDesc>Пешки периодически проверяют, есть ли на карте оружие из лоадаута лучшего качества.</CEQL_SettingUpgradeSearchDesc>
+    <CEQL_SettingHideAmmoGizmo>Скрывать полоску патронов при групповом выделении</CEQL_SettingHideAmmoGizmo>
+    <CEQL_SettingHideAmmoGizmoDesc>Если выделено больше 3 колонистов, полоска патронов CE не показывается, чтобы не загромождать панель.</CEQL_SettingHideAmmoGizmoDesc>
+    <CEQL_SettingDumpDebug>Вывести отладку в лог</CEQL_SettingDumpDebug>
+    <CEQL_StorageMenu>Склад</CEQL_StorageMenu>
+    <CEQL_StorageAdd>Добавить</CEQL_StorageAdd>
+    <CEQL_StorageMove>Перенести</CEQL_StorageMove>
+    <CEQL_StorageRemove>Удалить</CEQL_StorageRemove>
+    <CEQL_ItemAddedToStorage>«{0}» добавлен на склад «{1}»</CEQL_ItemAddedToStorage>
+    <CEQL_ItemMovedToStorage>«{0}» перенесён со склада «{1}» на «{2}»</CEQL_ItemMovedToStorage>
+    <CEQL_StorageCantHold>Этот склад не поддерживает «{0}»</CEQL_StorageCantHold>
+    <CEQL_LoadoutMenu>Лоадаут</CEQL_LoadoutMenu>
+    <CEQL_OutfitMenu>Гардероб</CEQL_OutfitMenu>
+    <CEQL_DietMenu>Диета</CEQL_DietMenu>
+    <CEQL_EditLoadoutMenu>Изменить лоадаут с «{0}»</CEQL_EditLoadoutMenu>
+    <CEQL_AddByColonistTop>Добавить колонисту</CEQL_AddByColonistTop>
+    <CEQL_ItemRemovedFromStorage>«{0}» удалён со склада «{1}»</CEQL_ItemRemovedFromStorage>
+    <CEQL_NotInStorage>«{0}» не находится на складе</CEQL_NotInStorage>
+    <CEQL_CreateNew>Создать новый</CEQL_CreateNew>
+</LanguageData>
